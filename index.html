@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أدوات الصور المجانية - تحويل، ضغط، وإزالة الخلفية</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🖼️ أدوات الصور المجانية</h1>
+            <p>جميع الأدوات تعمل محلياً على متصفحك - خصوصية كاملة وبدون حدود!</p>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <div class="container">
+            <button class="tab-btn active" data-tab="converter">تحويل الصيغة</button>
+            <button class="tab-btn" data-tab="background">إزالة الخلفية</button>
+            <button class="tab-btn" data-tab="compress">ضغط الصور</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Image Format Converter -->
+        <section id="converter" class="tool-section active">
+            <div class="tool-header">
+                <h2>🔄 تحويل صيغة الصور</h2>
+                <p>حول صورك بين جميع الصيغ الشائعة (PNG, JPG, WebP, BMP, ICO)</p>
+            </div>
+
+            <div class="upload-area" id="converter-upload">
+                <div class="upload-icon">📁</div>
+                <p>اسحب وأفلت الصور هنا أو انقر للاختيار</p>
+                <p class="upload-note">يدعم الرفع الدُفعي - اختر عدة صور مرة واحدة</p>
+                <input type="file" id="converter-input" accept="image/*" multiple hidden>
+            </div>
+
+            <div id="converter-options" class="options-panel" style="display: none;">
+                <div class="option-group">
+                    <label>تحويل إلى:</label>
+                    <select id="converter-format">
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="webp">WebP</option>
+                        <option value="bmp">BMP</option>
+                        <option value="ico">ICO</option>
+                    </select>
+                </div>
+
+                <div class="option-group" id="quality-group">
+                    <label>الجودة: <span id="quality-value">95</span>%</label>
+                    <input type="range" id="converter-quality" min="1" max="100" value="95">
+                </div>
+
+                <div class="option-group">
+                    <label>الدقة القصوى:</label>
+                    <select id="max-resolution">
+                        <option value="original">الأصلية</option>
+                        <option value="1920">Full HD (1920px)</option>
+                        <option value="3840">4K (3840px)</option>
+                        <option value="7680" selected>8K (7680px)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="converter-convert">تحويل الكل</button>
+            </div>
+
+            <div id="converter-preview" class="preview-grid"></div>
+        </section>
+
+        <!-- Background Removal -->
+        <section id="background" class="tool-section">
+            <div class="tool-header">
+                <h2>✂️ إزالة الخلفية</h2>
+                <p>إزالة خلفية الصور باستخدام الذكاء الاصطناعي - بدون رفع على الإنترنت</p>
+            </div>
+
+            <div class="upload-area" id="background-upload">
+                <div class="upload-icon">📁</div>
+                <p>اسحب وأفلت الصور هنا أو انقر للاختيار</p>
+                <p class="upload-note">يدعم الرفع الدُفعي</p>
+                <input type="file" id="background-input" accept="image/*" multiple hidden>
+            </div>
+
+            <div id="background-options" class="options-panel" style="display: none;">
+                <div class="option-group">
+                    <label>صيغة الحفظ:</label>
+                    <select id="background-format">
+                        <option value="png">PNG (شفاف)</option>
+                        <option value="webp">WebP (شفاف)</option>
+                        <option value="jpeg">JPEG (خلفية بيضاء)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="background-process">إزالة الخلفية</button>
+            </div>
+
+            <div id="background-preview" class="preview-grid"></div>
+        </section>
+
+        <!-- Image Compression -->
+        <section id="compress" class="tool-section">
+            <div class="tool-header">
+                <h2>🗜️ ضغط الصور</h2>
+                <p>قلل حجم الصور مع الحفاظ على الجودة - تحويل تلقائي إلى WebP</p>
+            </div>
+
+            <div class="upload-area" id="compress-upload">
+                <div class="upload-icon">📁</div>
+                <p>اسحب وأفلت الصور هنا أو انقر للاختيار</p>
+                <p class="upload-note">يدعم الرفع الدُفعي</p>
+                <input type="file" id="compress-input" accept="image/*" multiple hidden>
+            </div>
+
+            <div id="compress-options" class="options-panel" style="display: none;">
+                <div class="option-group">
+                    <label>
+                        <input type="checkbox" id="convert-to-webp" checked>
+                        تحويل إلى WebP (أفضل ضغط)
+                    </label>
+                </div>
+
+                <div class="option-group">
+                    <label>مستوى الضغط: <span id="compress-quality-value">80</span>%</label>
+                    <input type="range" id="compress-quality" min="1" max="100" value="80">
+                </div>
+
+                <div class="option-group">
+                    <label>تقليل الدقة:</label>
+                    <select id="compress-resolution">
+                        <option value="original">الحفاظ على الدقة الأصلية</option>
+                        <option value="1920">Full HD (1920px)</option>
+                        <option value="3840">4K (3840px)</option>
+                        <option value="7680">8K (7680px)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="compress-process">ضغط الكل</button>
+            </div>
+
+            <div id="compress-preview" class="preview-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>جميع المعالجات تتم محلياً على جهازك - لا يتم رفع أي صور على الإنترنت 🔒</p>
+            <p>مجاني بالكامل وبدون حدود ✨</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
