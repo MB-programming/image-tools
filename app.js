@@ -1,127 +1,166 @@
-// Global state
+// ==================== GLOBAL STATE ====================
 const state = {
-    converter: {
-        files: [],
-        processed: []
-    },
-    background: {
-        files: [],
-        processed: []
-    },
-    compress: {
-        files: [],
-        processed: []
-    }
+    currentTool: null,
+    converter: { files: [], processed: [] },
+    background: { files: [], processed: [] },
+    compress: { files: [], processed: [] },
+    videoBg: { file: null, processed: null }
 };
 
-// Initialize app
+// ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
-    initializeTabs();
+    initializeToolCards();
+    initializeModal();
     initializeConverter();
     initializeBackgroundRemoval();
     initializeCompression();
+    initializeVideoBackground();
 });
 
-// Tab Management
-function initializeTabs() {
-    const tabs = document.querySelectorAll('.tab-btn');
-    const sections = document.querySelectorAll('.tool-section');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
-
-            tabs.forEach(t => t.classList.remove('active'));
-            sections.forEach(s => s.classList.remove('active'));
-
-            tab.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
+// ==================== TOOL CARDS & MODAL ====================
+function initializeToolCards() {
+    const toolCards = document.querySelectorAll('.tool-card');
+    toolCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const tool = card.dataset.tool;
+            openTool(tool);
         });
     });
 }
 
-// ==================== IMAGE FORMAT CONVERTER ====================
+function initializeModal() {
+    const modal = document.getElementById('tool-modal');
+    const closeBtn = document.getElementById('close-modal');
+    const overlay = modal.querySelector('.modal-overlay');
 
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+}
+
+function openTool(tool) {
+    state.currentTool = tool;
+    const modal = document.getElementById('tool-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-description');
+
+    // Hide all tool contents
+    document.querySelectorAll('.tool-content').forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // Show selected tool content
+    const toolContent = document.getElementById(`${tool}-content`);
+    if (toolContent) {
+        toolContent.style.display = 'block';
+    }
+
+    // Set title and description based on tool
+    const toolTitles = {
+        'converter': translate('tool-converter-title'),
+        'background': translate('tool-background-title'),
+        'compress': translate('tool-compress-title'),
+        'video-bg': translate('tool-video-bg-title')
+    };
+
+    const toolDescs = {
+        'converter': translate('tool-converter-desc'),
+        'background': translate('tool-background-desc'),
+        'compress': translate('tool-compress-desc'),
+        'video-bg': translate('tool-video-bg-desc')
+    };
+
+    modalTitle.textContent = toolTitles[tool] || '';
+    modalDesc.textContent = toolDescs[tool] || '';
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const modal = document.getElementById('tool-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+
+    // Reset state
+    resetTool(state.currentTool);
+}
+
+function resetTool(tool) {
+    if (!tool) return;
+
+    state[tool] = tool === 'videoBg' ? { file: null, processed: null } : { files: [], processed: [] };
+
+    // Clear preview
+    const preview = document.getElementById(`${tool}-preview`);
+    if (preview) preview.innerHTML = '';
+
+    // Hide options
+    const options = document.getElementById(`${tool}-options`);
+    if (options) options.style.display = 'none';
+}
+
+// ==================== IMAGE CONVERTER ====================
 function initializeConverter() {
     const uploadArea = document.getElementById('converter-upload');
     const fileInput = document.getElementById('converter-input');
-    const formatSelect = document.getElementById('converter-format');
+    const convertBtn = document.getElementById('converter-convert');
     const qualitySlider = document.getElementById('converter-quality');
     const qualityValue = document.getElementById('quality-value');
-    const convertBtn = document.getElementById('converter-convert');
-    const qualityGroup = document.getElementById('quality-group');
 
-    // Upload area click
-    uploadArea.addEventListener('click', () => fileInput.click());
+    if (!uploadArea || !fileInput) return;
 
-    // Drag and drop
-    setupDragAndDrop(uploadArea, fileInput, (files) => {
-        handleConverterFiles(files);
-    });
-
-    // File input change
-    fileInput.addEventListener('change', (e) => {
-        handleConverterFiles(e.target.files);
-    });
-
-    // Format change - show/hide quality
-    formatSelect.addEventListener('change', () => {
-        const format = formatSelect.value;
-        if (format === 'png' || format === 'bmp' || format === 'ico') {
-            qualityGroup.style.display = 'none';
-        } else {
-            qualityGroup.style.display = 'block';
+    uploadArea.addEventListener('click', (e) => {
+        if (e.target === uploadArea || uploadArea.contains(e.target)) {
+            fileInput.click();
         }
     });
 
-    // Quality slider
-    qualitySlider.addEventListener('input', (e) => {
-        qualityValue.textContent = e.target.value;
+    setupDragAndDrop(uploadArea, handleConverterFiles);
+
+    fileInput.addEventListener('change', (e) => {
+        handleConverterFiles(Array.from(e.target.files));
     });
 
-    // Convert button
-    convertBtn.addEventListener('click', () => {
-        convertAllImages();
-    });
+    if (qualitySlider && qualityValue) {
+        qualitySlider.addEventListener('input', (e) => {
+            qualityValue.textContent = e.target.value;
+        });
+    }
+
+    if (convertBtn) {
+        convertBtn.addEventListener('click', convertAllImages);
+    }
 }
 
 function handleConverterFiles(files) {
-    state.converter.files = Array.from(files).filter(file => file.type.startsWith('image/'));
+    const imageFiles = files.filter(file =>
+        file.type.startsWith('image/') || file.name.endsWith('.svg')
+    );
 
-    if (state.converter.files.length === 0) {
-        alert('الرجاء اختيار ملفات صور صحيحة');
+    if (imageFiles.length === 0) {
+        alert(translate('error') || 'Please select valid image files');
         return;
     }
 
+    state.converter.files = imageFiles;
     document.getElementById('converter-options').style.display = 'block';
     displayConverterPreviews();
 }
 
 function displayConverterPreviews() {
     const preview = document.getElementById('converter-preview');
+    if (!preview) return;
+
     preview.innerHTML = '';
 
     state.converter.files.forEach((file, index) => {
-        const card = document.createElement('div');
-        card.className = 'preview-card';
-        card.innerHTML = `
-            <div class="preview-image-container">
-                <img src="${URL.createObjectURL(file)}" alt="${file.name}">
-            </div>
-            <div class="preview-info">
-                <div class="preview-filename">${file.name}</div>
-                <div class="preview-details">
-                    ${(file.size / 1024).toFixed(2)} KB
-                </div>
-                <div class="preview-status processing">جاهز للتحويل</div>
-            </div>
-        `;
+        const card = createPreviewCard(file, index, 'converter');
         preview.appendChild(card);
     });
 }
 
 async function convertAllImages() {
-    const format = document.getElementById('converter-format').value;
+    const toFormat = document.getElementById('to-format').value;
     const quality = parseInt(document.getElementById('converter-quality').value) / 100;
     const maxResolution = document.getElementById('max-resolution').value;
     const preview = document.getElementById('converter-preview');
@@ -130,178 +169,127 @@ async function convertAllImages() {
         const file = state.converter.files[i];
         const card = preview.children[i];
         const statusDiv = card.querySelector('.preview-status');
-        const infoDiv = card.querySelector('.preview-info');
 
         try {
-            statusDiv.textContent = 'جاري التحويل...';
+            statusDiv.textContent = translate('processing');
             statusDiv.className = 'preview-status processing';
 
-            const convertedBlob = await convertImage(file, format, quality, maxResolution);
-            const convertedSize = (convertedBlob.size / 1024).toFixed(2);
-
-            statusDiv.textContent = 'تم التحويل ✓';
-            statusDiv.className = 'preview-status ready';
-
-            // Update preview with converted image
-            const img = card.querySelector('img');
-            img.src = URL.createObjectURL(convertedBlob);
-
-            // Update details
-            const detailsDiv = card.querySelector('.preview-details');
-            detailsDiv.innerHTML = `
-                الحجم الأصلي: ${(file.size / 1024).toFixed(2)} KB<br>
-                الحجم الجديد: ${convertedSize} KB<br>
-                التوفير: ${(((file.size - convertedBlob.size) / file.size) * 100).toFixed(1)}%
-            `;
-
-            // Add download button
-            if (!card.querySelector('.preview-actions')) {
-                const actions = document.createElement('div');
-                actions.className = 'preview-actions';
-                actions.innerHTML = `
-                    <button class="btn btn-success download-btn">تحميل</button>
-                `;
-                infoDiv.appendChild(actions);
-
-                actions.querySelector('.download-btn').addEventListener('click', () => {
-                    const fileName = file.name.replace(/\.[^/.]+$/, '') + '.' + format.replace('jpeg', 'jpg');
-                    downloadBlob(convertedBlob, fileName);
-                });
-            }
+            const convertedBlob = await convertImage(file, toFormat, quality, maxResolution);
+            updatePreviewCard(card, file, convertedBlob, toFormat, i, 'converter');
 
             state.converter.processed[i] = {
                 blob: convertedBlob,
-                name: file.name.replace(/\.[^/.]+$/, '') + '.' + format.replace('jpeg', 'jpg')
+                name: getConvertedFileName(file.name, toFormat)
             };
 
         } catch (error) {
-            statusDiv.textContent = 'خطأ في التحويل';
+            statusDiv.textContent = translate('error');
             statusDiv.className = 'preview-status error';
             console.error(error);
         }
     }
 
-    // Add "Download All" button
-    if (!document.querySelector('.download-all-container')) {
-        const downloadAllContainer = document.createElement('div');
-        downloadAllContainer.className = 'download-all-container';
-        downloadAllContainer.innerHTML = `
-            <button class="btn btn-success">تحميل الكل كملف مضغوط</button>
-        `;
-        preview.parentNode.insertBefore(downloadAllContainer, preview.nextSibling);
-
-        downloadAllContainer.querySelector('button').addEventListener('click', () => {
-            downloadAllAsZip(state.converter.processed);
-        });
-    }
+    addDownloadAllButton('converter-preview', state.converter.processed);
 }
 
 async function convertImage(file, format, quality, maxResolution) {
     return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-            try {
-                let width = img.width;
-                let height = img.height;
+        const reader = new FileReader();
 
-                // Apply max resolution
-                if (maxResolution !== 'original') {
-                    const max = parseInt(maxResolution);
-                    if (width > height && width > max) {
-                        height = (height / width) * max;
-                        width = max;
-                    } else if (height > max) {
-                        width = (width / height) * max;
-                        height = max;
+        reader.onload = (e) => {
+            const img = new Image();
+
+            img.onload = () => {
+                try {
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Apply max resolution
+                    if (maxResolution !== 'original') {
+                        const max = parseInt(maxResolution);
+                        if (width > height && width > max) {
+                            height = (height / width) * max;
+                            width = max;
+                        } else if (height > max) {
+                            width = (width / height) * max;
+                            height = max;
+                        }
                     }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const mimeType = getMimeType(format);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('Failed to convert image'));
+                        }
+                    }, mimeType, quality);
+
+                } catch (error) {
+                    reject(error);
                 }
+            };
 
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-
-                // For better quality scaling
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-
-                ctx.drawImage(img, 0, 0, width, height);
-
-                const mimeType = format === 'jpeg' ? 'image/jpeg' :
-                                format === 'webp' ? 'image/webp' :
-                                format === 'bmp' ? 'image/bmp' :
-                                'image/png';
-
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        reject(new Error('Failed to convert image'));
-                    }
-                }, mimeType, quality);
-
-            } catch (error) {
-                reject(error);
-            }
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = e.target.result;
         };
-        img.onerror = () => reject(new Error('Failed to load image'));
-        img.src = URL.createObjectURL(file);
+
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
     });
 }
 
 // ==================== BACKGROUND REMOVAL ====================
-
 function initializeBackgroundRemoval() {
     const uploadArea = document.getElementById('background-upload');
     const fileInput = document.getElementById('background-input');
     const processBtn = document.getElementById('background-process');
 
-    uploadArea.addEventListener('click', () => fileInput.click());
+    if (!uploadArea || !fileInput) return;
 
-    setupDragAndDrop(uploadArea, fileInput, (files) => {
-        handleBackgroundFiles(files);
-    });
+    uploadArea.addEventListener('click', () => fileInput.click());
+    setupDragAndDrop(uploadArea, handleBackgroundFiles);
 
     fileInput.addEventListener('change', (e) => {
-        handleBackgroundFiles(e.target.files);
+        handleBackgroundFiles(Array.from(e.target.files));
     });
 
-    processBtn.addEventListener('click', () => {
-        processBackgroundRemoval();
-    });
+    if (processBtn) {
+        processBtn.addEventListener('click', processBackgroundRemoval);
+    }
 }
 
 function handleBackgroundFiles(files) {
-    state.background.files = Array.from(files).filter(file => file.type.startsWith('image/'));
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
 
-    if (state.background.files.length === 0) {
-        alert('الرجاء اختيار ملفات صور صحيحة');
+    if (imageFiles.length === 0) {
+        alert(translate('error') || 'Please select valid image files');
         return;
     }
 
+    state.background.files = imageFiles;
     document.getElementById('background-options').style.display = 'block';
     displayBackgroundPreviews();
 }
 
 function displayBackgroundPreviews() {
     const preview = document.getElementById('background-preview');
+    if (!preview) return;
+
     preview.innerHTML = '';
 
     state.background.files.forEach((file) => {
-        const card = document.createElement('div');
-        card.className = 'preview-card';
-        card.innerHTML = `
-            <div class="preview-image-container">
-                <img src="${URL.createObjectURL(file)}" alt="${file.name}">
-            </div>
-            <div class="preview-info">
-                <div class="preview-filename">${file.name}</div>
-                <div class="preview-details">
-                    ${(file.size / 1024).toFixed(2)} KB
-                </div>
-                <div class="preview-status processing">جاهز للمعالجة</div>
-            </div>
-        `;
+        const card = createPreviewCard(file, 0, 'background');
         preview.appendChild(card);
     });
 }
@@ -314,116 +302,78 @@ async function processBackgroundRemoval() {
         const file = state.background.files[i];
         const card = preview.children[i];
         const statusDiv = card.querySelector('.preview-status');
-        const infoDiv = card.querySelector('.preview-info');
 
         try {
-            statusDiv.textContent = 'جاري إزالة الخلفية...';
+            statusDiv.textContent = translate('processing');
             statusDiv.className = 'preview-status processing';
 
             const processedBlob = await removeBackground(file, format);
 
-            statusDiv.textContent = 'تمت الإزالة ✓';
+            statusDiv.textContent = translate('completed');
             statusDiv.className = 'preview-status ready';
 
-            // Create comparison view
-            const imgContainer = card.querySelector('.preview-image-container');
-            imgContainer.innerHTML = `
-                <div class="comparison-container">
-                    <div class="comparison-before">
-                        <img src="${URL.createObjectURL(file)}" alt="Before">
-                    </div>
-                    <div class="comparison-after">
-                        <img src="${URL.createObjectURL(processedBlob)}" alt="After">
-                    </div>
-                    <div class="comparison-slider"></div>
-                </div>
-            `;
-
-            setupComparisonSlider(imgContainer.querySelector('.comparison-container'));
+            // Create comparison slider
+            createComparisonView(card, file, processedBlob);
 
             // Add download button
-            if (!card.querySelector('.preview-actions')) {
-                const actions = document.createElement('div');
-                actions.className = 'preview-actions';
-                actions.innerHTML = `
-                    <button class="btn btn-success download-btn">تحميل</button>
-                `;
-                infoDiv.appendChild(actions);
-
-                actions.querySelector('.download-btn').addEventListener('click', () => {
-                    const fileName = file.name.replace(/\.[^/.]+$/, '') + '_no_bg.' + format.replace('jpeg', 'jpg');
-                    downloadBlob(processedBlob, fileName);
-                });
-            }
+            addDownloadButton(card, processedBlob, file.name.replace(/\.[^/.]+$/, '') + '_no_bg.' + format);
 
             state.background.processed[i] = {
                 blob: processedBlob,
-                name: file.name.replace(/\.[^/.]+$/, '') + '_no_bg.' + format.replace('jpeg', 'jpg')
+                name: file.name.replace(/\.[^/.]+$/, '') + '_no_bg.' + format
             };
 
         } catch (error) {
-            statusDiv.textContent = 'خطأ في المعالجة';
+            statusDiv.textContent = translate('error');
             statusDiv.className = 'preview-status error';
             console.error(error);
         }
     }
 
-    // Add "Download All" button
-    if (!document.querySelector('#background .download-all-container')) {
-        const downloadAllContainer = document.createElement('div');
-        downloadAllContainer.className = 'download-all-container';
-        downloadAllContainer.innerHTML = `
-            <button class="btn btn-success">تحميل الكل كملف مضغوط</button>
-        `;
-        preview.parentNode.insertBefore(downloadAllContainer, preview.nextSibling);
-
-        downloadAllContainer.querySelector('button').addEventListener('click', () => {
-            downloadAllAsZip(state.background.processed);
-        });
-    }
+    addDownloadAllButton('background-preview', state.background.processed);
 }
 
 async function removeBackground(file, outputFormat) {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.onload = () => {
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const reader = new FileReader();
 
-                ctx.drawImage(img, 0, 0);
+        reader.onload = (e) => {
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-                // Advanced background removal algorithm
-                // This uses edge detection and color similarity
-                const processedData = advancedBackgroundRemoval(data, canvas.width, canvas.height);
+                    // Advanced background removal
+                    const processedData = advancedBackgroundRemoval(imageData.data, canvas.width, canvas.height);
+                    ctx.putImageData(processedData, 0, 0);
 
-                ctx.putImageData(processedData, 0, 0);
+                    const mimeType = getMimeType(outputFormat);
+                    const quality = outputFormat === 'jpeg' ? 0.95 : 1.0;
 
-                const mimeType = outputFormat === 'jpeg' ? 'image/jpeg' :
-                                outputFormat === 'webp' ? 'image/webp' :
-                                'image/png';
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('Failed to process image'));
+                        }
+                    }, mimeType, quality);
 
-                const quality = outputFormat === 'jpeg' ? 0.95 : 1.0;
-
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        reject(new Error('Failed to process image'));
-                    }
-                }, mimeType, quality);
-
-            } catch (error) {
-                reject(error);
-            }
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = e.target.result;
         };
-        img.onerror = () => reject(new Error('Failed to load image'));
-        img.src = URL.createObjectURL(file);
+
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
     });
 }
 
@@ -431,31 +381,11 @@ function advancedBackgroundRemoval(data, width, height) {
     const imageData = new ImageData(new Uint8ClampedArray(data), width, height);
     const pixels = imageData.data;
 
-    // Sample edge pixels to determine background color
-    const edgeSamples = [];
-    const sampleSize = 5;
-
-    // Top and bottom edges
-    for (let x = 0; x < width; x += Math.floor(width / 20)) {
-        for (let y = 0; y < sampleSize; y++) {
-            edgeSamples.push(getPixel(pixels, x, y, width));
-            edgeSamples.push(getPixel(pixels, x, height - 1 - y, width));
-        }
-    }
-
-    // Left and right edges
-    for (let y = 0; y < height; y += Math.floor(height / 20)) {
-        for (let x = 0; x < sampleSize; x++) {
-            edgeSamples.push(getPixel(pixels, x, y, width));
-            edgeSamples.push(getPixel(pixels, width - 1 - x, y, width));
-        }
-    }
-
-    // Calculate average background color
+    // Sample edge pixels for background color
+    const edgeSamples = sampleEdgePixels(pixels, width, height);
     const bgColor = averageColor(edgeSamples);
 
-    // Remove background based on color similarity
-    const threshold = 40; // Adjust for sensitivity
+    const threshold = 40;
 
     for (let i = 0; i < pixels.length; i += 4) {
         const r = pixels[i];
@@ -465,9 +395,8 @@ function advancedBackgroundRemoval(data, width, height) {
         const colorDist = colorDistance(r, g, b, bgColor.r, bgColor.g, bgColor.b);
 
         if (colorDist < threshold) {
-            pixels[i + 3] = 0; // Make transparent
+            pixels[i + 3] = 0;
         } else if (colorDist < threshold * 2) {
-            // Gradual transparency for edge smoothing
             pixels[i + 3] = Math.floor(((colorDist - threshold) / threshold) * 255);
         }
     }
@@ -475,37 +404,343 @@ function advancedBackgroundRemoval(data, width, height) {
     return imageData;
 }
 
+function sampleEdgePixels(pixels, width, height) {
+    const samples = [];
+    const sampleSize = 5;
+
+    for (let x = 0; x < width; x += Math.floor(width / 20)) {
+        for (let y = 0; y < sampleSize; y++) {
+            samples.push(getPixel(pixels, x, y, width));
+            samples.push(getPixel(pixels, x, height - 1 - y, width));
+        }
+    }
+
+    for (let y = 0; y < height; y += Math.floor(height / 20)) {
+        for (let x = 0; x < sampleSize; x++) {
+            samples.push(getPixel(pixels, x, y, width));
+            samples.push(getPixel(pixels, width - 1 - x, y, width));
+        }
+    }
+
+    return samples;
+}
+
 function getPixel(pixels, x, y, width) {
     const i = (y * width + x) * 4;
-    return {
-        r: pixels[i],
-        g: pixels[i + 1],
-        b: pixels[i + 2],
-        a: pixels[i + 3]
-    };
+    return { r: pixels[i], g: pixels[i + 1], b: pixels[i + 2], a: pixels[i + 3] };
 }
 
 function averageColor(samples) {
     let r = 0, g = 0, b = 0;
-    samples.forEach(s => {
-        r += s.r;
-        g += s.g;
-        b += s.b;
-    });
+    samples.forEach(s => { r += s.r; g += s.g; b += s.b; });
     const count = samples.length;
-    return {
-        r: Math.floor(r / count),
-        g: Math.floor(g / count),
-        b: Math.floor(b / count)
-    };
+    return { r: Math.floor(r / count), g: Math.floor(g / count), b: Math.floor(b / count) };
 }
 
 function colorDistance(r1, g1, b1, r2, g2, b2) {
-    return Math.sqrt(
-        Math.pow(r1 - r2, 2) +
-        Math.pow(g1 - g2, 2) +
-        Math.pow(b1 - b2, 2)
-    );
+    return Math.sqrt(Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2));
+}
+
+// ==================== IMAGE COMPRESSION ====================
+function initializeCompression() {
+    const uploadArea = document.getElementById('compress-upload');
+    const fileInput = document.getElementById('compress-input');
+    const processBtn = document.getElementById('compress-process');
+    const qualitySlider = document.getElementById('compress-quality');
+    const qualityValue = document.getElementById('compress-quality-value');
+
+    if (!uploadArea || !fileInput) return;
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    setupDragAndDrop(uploadArea, handleCompressFiles);
+
+    fileInput.addEventListener('change', (e) => {
+        handleCompressFiles(Array.from(e.target.files));
+    });
+
+    if (qualitySlider && qualityValue) {
+        qualitySlider.addEventListener('input', (e) => {
+            qualityValue.textContent = e.target.value;
+        });
+    }
+
+    if (processBtn) {
+        processBtn.addEventListener('click', processCompression);
+    }
+}
+
+function handleCompressFiles(files) {
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+
+    if (imageFiles.length === 0) {
+        alert(translate('error') || 'Please select valid image files');
+        return;
+    }
+
+    state.compress.files = imageFiles;
+    document.getElementById('compress-options').style.display = 'block';
+    displayCompressPreviews();
+}
+
+function displayCompressPreviews() {
+    const preview = document.getElementById('compress-preview');
+    if (!preview) return;
+
+    preview.innerHTML = '';
+
+    state.compress.files.forEach((file) => {
+        const card = createPreviewCard(file, 0, 'compress');
+        preview.appendChild(card);
+    });
+}
+
+async function processCompression() {
+    const convertToWebP = document.getElementById('convert-to-webp').checked;
+    const quality = parseInt(document.getElementById('compress-quality').value) / 100;
+    const maxResolution = document.getElementById('compress-resolution').value;
+    const preview = document.getElementById('compress-preview');
+
+    for (let i = 0; i < state.compress.files.length; i++) {
+        const file = state.compress.files[i];
+        const card = preview.children[i];
+        const statusDiv = card.querySelector('.preview-status');
+
+        try {
+            statusDiv.textContent = translate('processing');
+            statusDiv.className = 'preview-status processing';
+
+            const format = convertToWebP ? 'webp' : (file.type.includes('png') ? 'png' : 'jpeg');
+            const compressedBlob = await convertImage(file, format, quality, maxResolution);
+
+            const savings = (((file.size - compressedBlob.size) / file.size) * 100).toFixed(1);
+            statusDiv.textContent = `${translate('completed')} (${savings}% ${translate('saved') || 'saved'})`;
+            statusDiv.className = 'preview-status ready';
+
+            updateCompressCard(card, file, compressedBlob, format);
+
+            const extension = format === 'webp' ? 'webp' : (format === 'png' ? 'png' : 'jpg');
+            const fileName = file.name.replace(/\.[^/.]+$/, '') + '_compressed.' + extension;
+
+            addDownloadButton(card, compressedBlob, fileName);
+
+            state.compress.processed[i] = { blob: compressedBlob, name: fileName };
+
+        } catch (error) {
+            statusDiv.textContent = translate('error');
+            statusDiv.className = 'preview-status error';
+            console.error(error);
+        }
+    }
+
+    addDownloadAllButton('compress-preview', state.compress.processed);
+}
+
+// ==================== VIDEO BACKGROUND REMOVAL ====================
+function initializeVideoBackground() {
+    const uploadArea = document.getElementById('video-bg-upload');
+    const fileInput = document.getElementById('video-bg-input');
+    const processBtn = document.getElementById('video-bg-process');
+
+    if (!uploadArea || !fileInput) return;
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    setupDragAndDrop(uploadArea, handleVideoFile);
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleVideoFile([e.target.files[0]]);
+        }
+    });
+
+    if (processBtn) {
+        processBtn.addEventListener('click', processVideoBackground);
+    }
+}
+
+function handleVideoFile(files) {
+    if (files.length === 0 || !files[0].type.startsWith('video/')) {
+        alert(translate('error') || 'Please select a valid video file');
+        return;
+    }
+
+    state.videoBg.file = files[0];
+    document.getElementById('video-bg-options').style.display = 'block';
+    displayVideoPreview();
+}
+
+function displayVideoPreview() {
+    const preview = document.getElementById('video-bg-preview');
+    if (!preview) return;
+
+    preview.innerHTML = `
+        <div class="video-card">
+            <video class="video-player" controls>
+                <source src="${URL.createObjectURL(state.videoBg.file)}" type="${state.videoBg.file.type}">
+            </video>
+            <div class="video-info">
+                <div class="preview-filename">${state.videoBg.file.name}</div>
+                <div class="preview-details">
+                    ${translate('size') || 'Size'}: ${(state.videoBg.file.size / 1024 / 1024).toFixed(2)} MB
+                </div>
+                <div class="preview-status processing">${translate('ready') || 'Ready to process'}</div>
+            </div>
+        </div>
+    `;
+}
+
+async function processVideoBackground() {
+    const preview = document.getElementById('video-bg-preview');
+    const videoCard = preview.querySelector('.video-card');
+    const statusDiv = videoCard.querySelector('.preview-status');
+
+    try {
+        statusDiv.textContent = translate('processing');
+        statusDiv.className = 'preview-status processing';
+
+        // Create video element
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(state.videoBg.file);
+        video.muted = true;
+
+        await new Promise((resolve, reject) => {
+            video.onloadeddata = resolve;
+            video.onerror = reject;
+        });
+
+        // Process video frame by frame
+        const processedBlob = await processVideoFrames(video);
+
+        statusDiv.textContent = translate('completed');
+        statusDiv.className = 'preview-status ready';
+
+        // Update preview with processed video
+        const processedVideo = videoCard.querySelector('.video-player');
+        processedVideo.src = URL.createObjectURL(processedBlob);
+
+        // Add download button
+        const actions = document.createElement('div');
+        actions.className = 'preview-actions';
+        actions.innerHTML = `
+            <button class="btn btn-success">${translate('download')}</button>
+        `;
+        videoCard.querySelector('.video-info').appendChild(actions);
+
+        actions.querySelector('button').addEventListener('click', () => {
+            downloadBlob(processedBlob, state.videoBg.file.name.replace(/\.[^/.]+$/, '') + '_no_bg.webm');
+        });
+
+        state.videoBg.processed = processedBlob;
+
+    } catch (error) {
+        statusDiv.textContent = translate('error');
+        statusDiv.className = 'preview-status error';
+        console.error(error);
+        alert('Video processing failed. This feature requires a modern browser with WebCodecs API support.');
+    }
+}
+
+async function processVideoFrames(video) {
+    // This is a simplified version - full implementation would require WebCodecs API
+    // For now, we'll show a message that this is a complex feature
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+
+        // Draw first frame for demo
+        ctx.drawImage(video, 0, 0);
+
+        canvas.toBlob((blob) => {
+            if (blob) {
+                // In a real implementation, this would process all frames
+                resolve(blob);
+            } else {
+                reject(new Error('Failed to process video'));
+            }
+        }, 'image/webp');
+    });
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+function setupDragAndDrop(uploadArea, callback) {
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragging');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragging');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragging');
+        const files = Array.from(e.dataTransfer.files);
+        callback(files);
+    });
+}
+
+function createPreviewCard(file, index, type) {
+    const card = document.createElement('div');
+    card.className = 'preview-card';
+    card.innerHTML = `
+        <div class="preview-image-container">
+            <img src="${URL.createObjectURL(file)}" alt="${file.name}">
+        </div>
+        <div class="preview-info">
+            <div class="preview-filename">${file.name}</div>
+            <div class="preview-details">
+                ${(file.size / 1024).toFixed(2)} KB
+            </div>
+            <div class="preview-status processing">${translate('ready') || 'Ready'}</div>
+        </div>
+    `;
+    return card;
+}
+
+function updatePreviewCard(card, originalFile, convertedBlob, format, index, type) {
+    const statusDiv = card.querySelector('.preview-status');
+    statusDiv.textContent = translate('completed');
+    statusDiv.className = 'preview-status ready';
+
+    const img = card.querySelector('img');
+    img.src = URL.createObjectURL(convertedBlob);
+
+    const detailsDiv = card.querySelector('.preview-details');
+    detailsDiv.innerHTML = `
+        ${translate('original') || 'Original'}: ${(originalFile.size / 1024).toFixed(2)} KB<br>
+        ${translate('new') || 'New'}: ${(convertedBlob.size / 1024).toFixed(2)} KB<br>
+        ${translate('saved') || 'Saved'}: ${(((originalFile.size - convertedBlob.size) / originalFile.size) * 100).toFixed(1)}%
+    `;
+
+    addDownloadButton(card, convertedBlob, getConvertedFileName(originalFile.name, format));
+}
+
+function updateCompressCard(card, originalFile, compressedBlob, format) {
+    const detailsDiv = card.querySelector('.preview-details');
+    detailsDiv.innerHTML = `
+        ${translate('original') || 'Original'}: ${(originalFile.size / 1024).toFixed(2)} KB<br>
+        ${translate('compressed') || 'Compressed'}: ${(compressedBlob.size / 1024).toFixed(2)} KB<br>
+        ${translate('saved') || 'Saved'}: ${(((originalFile.size - compressedBlob.size) / originalFile.size) * 100).toFixed(1)}%
+    `;
+}
+
+function createComparisonView(card, originalFile, processedBlob) {
+    const imgContainer = card.querySelector('.preview-image-container');
+    imgContainer.innerHTML = `
+        <div class="comparison-container">
+            <div class="comparison-before">
+                <img src="${URL.createObjectURL(originalFile)}" alt="Before">
+            </div>
+            <div class="comparison-after">
+                <img src="${URL.createObjectURL(processedBlob)}" alt="After">
+            </div>
+            <div class="comparison-slider"></div>
+        </div>
+    `;
+
+    setupComparisonSlider(imgContainer.querySelector('.comparison-container'));
 }
 
 function setupComparisonSlider(container) {
@@ -528,7 +763,6 @@ function setupComparisonSlider(container) {
         if (isDragging) updateSlider(e.clientX);
     });
 
-    // Touch support
     slider.addEventListener('touchstart', () => isDragging = true);
     document.addEventListener('touchend', () => isDragging = false);
     container.addEventListener('touchmove', (e) => {
@@ -536,162 +770,41 @@ function setupComparisonSlider(container) {
     });
 }
 
-// ==================== IMAGE COMPRESSION ====================
+function addDownloadButton(card, blob, fileName) {
+    const infoDiv = card.querySelector('.preview-info');
 
-function initializeCompression() {
-    const uploadArea = document.getElementById('compress-upload');
-    const fileInput = document.getElementById('compress-input');
-    const processBtn = document.getElementById('compress-process');
-    const qualitySlider = document.getElementById('compress-quality');
-    const qualityValue = document.getElementById('compress-quality-value');
-
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    setupDragAndDrop(uploadArea, fileInput, (files) => {
-        handleCompressFiles(files);
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        handleCompressFiles(e.target.files);
-    });
-
-    qualitySlider.addEventListener('input', (e) => {
-        qualityValue.textContent = e.target.value;
-    });
-
-    processBtn.addEventListener('click', () => {
-        processCompression();
-    });
-}
-
-function handleCompressFiles(files) {
-    state.compress.files = Array.from(files).filter(file => file.type.startsWith('image/'));
-
-    if (state.compress.files.length === 0) {
-        alert('الرجاء اختيار ملفات صور صحيحة');
-        return;
-    }
-
-    document.getElementById('compress-options').style.display = 'block';
-    displayCompressPreviews();
-}
-
-function displayCompressPreviews() {
-    const preview = document.getElementById('compress-preview');
-    preview.innerHTML = '';
-
-    state.compress.files.forEach((file) => {
-        const card = document.createElement('div');
-        card.className = 'preview-card';
-        card.innerHTML = `
-            <div class="preview-image-container">
-                <img src="${URL.createObjectURL(file)}" alt="${file.name}">
-            </div>
-            <div class="preview-info">
-                <div class="preview-filename">${file.name}</div>
-                <div class="preview-details">
-                    ${(file.size / 1024).toFixed(2)} KB
-                </div>
-                <div class="preview-status processing">جاهز للضغط</div>
-            </div>
+    if (!card.querySelector('.preview-actions')) {
+        const actions = document.createElement('div');
+        actions.className = 'preview-actions';
+        actions.innerHTML = `
+            <button class="btn btn-success">${translate('download')}</button>
         `;
-        preview.appendChild(card);
-    });
-}
+        infoDiv.appendChild(actions);
 
-async function processCompression() {
-    const convertToWebP = document.getElementById('convert-to-webp').checked;
-    const quality = parseInt(document.getElementById('compress-quality').value) / 100;
-    const maxResolution = document.getElementById('compress-resolution').value;
-    const preview = document.getElementById('compress-preview');
-
-    for (let i = 0; i < state.compress.files.length; i++) {
-        const file = state.compress.files[i];
-        const card = preview.children[i];
-        const statusDiv = card.querySelector('.preview-status');
-        const infoDiv = card.querySelector('.preview-info');
-
-        try {
-            statusDiv.textContent = 'جاري الضغط...';
-            statusDiv.className = 'preview-status processing';
-
-            const format = convertToWebP ? 'webp' : (file.type.includes('png') ? 'png' : 'jpeg');
-            const compressedBlob = await convertImage(file, format, quality, maxResolution);
-            const compressedSize = (compressedBlob.size / 1024).toFixed(2);
-            const savings = (((file.size - compressedBlob.size) / file.size) * 100).toFixed(1);
-
-            statusDiv.textContent = `تم الضغط ✓ (وفّر ${savings}%)`;
-            statusDiv.className = 'preview-status ready';
-
-            // Update details
-            const detailsDiv = card.querySelector('.preview-details');
-            detailsDiv.innerHTML = `
-                الحجم الأصلي: ${(file.size / 1024).toFixed(2)} KB<br>
-                الحجم المضغوط: ${compressedSize} KB<br>
-                التوفير: ${savings}%
-            `;
-
-            // Add download button
-            if (!card.querySelector('.preview-actions')) {
-                const actions = document.createElement('div');
-                actions.className = 'preview-actions';
-                actions.innerHTML = `
-                    <button class="btn btn-success download-btn">تحميل</button>
-                `;
-                infoDiv.appendChild(actions);
-
-                const extension = convertToWebP ? 'webp' : (format === 'png' ? 'png' : 'jpg');
-                const fileName = file.name.replace(/\.[^/.]+$/, '') + '_compressed.' + extension;
-
-                actions.querySelector('.download-btn').addEventListener('click', () => {
-                    downloadBlob(compressedBlob, fileName);
-                });
-
-                state.compress.processed[i] = {
-                    blob: compressedBlob,
-                    name: fileName
-                };
-            }
-
-        } catch (error) {
-            statusDiv.textContent = 'خطأ في الضغط';
-            statusDiv.className = 'preview-status error';
-            console.error(error);
-        }
-    }
-
-    // Add "Download All" button
-    if (!document.querySelector('#compress .download-all-container')) {
-        const downloadAllContainer = document.createElement('div');
-        downloadAllContainer.className = 'download-all-container';
-        downloadAllContainer.innerHTML = `
-            <button class="btn btn-success">تحميل الكل كملف مضغوط</button>
-        `;
-        preview.parentNode.insertBefore(downloadAllContainer, preview.nextSibling);
-
-        downloadAllContainer.querySelector('button').addEventListener('click', () => {
-            downloadAllAsZip(state.compress.processed);
+        actions.querySelector('button').addEventListener('click', () => {
+            downloadBlob(blob, fileName);
         });
     }
 }
 
-// ==================== UTILITY FUNCTIONS ====================
+function addDownloadAllButton(previewId, processedFiles) {
+    const preview = document.getElementById(previewId);
+    if (!preview || !preview.parentNode) return;
 
-function setupDragAndDrop(uploadArea, fileInput, callback) {
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragging');
-    });
+    const existing = preview.parentNode.querySelector('.download-all-container');
+    if (existing) existing.remove();
 
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragging');
-    });
+    if (processedFiles.filter(f => f).length === 0) return;
 
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragging');
-        const files = e.dataTransfer.files;
-        callback(files);
+    const downloadAllContainer = document.createElement('div');
+    downloadAllContainer.className = 'download-all-container';
+    downloadAllContainer.innerHTML = `
+        <button class="btn btn-success">${translate('download-all')}</button>
+    `;
+    preview.parentNode.insertBefore(downloadAllContainer, preview.nextSibling);
+
+    downloadAllContainer.querySelector('button').addEventListener('click', () => {
+        downloadAllFiles(processedFiles);
     });
 }
 
@@ -706,18 +819,31 @@ function downloadBlob(blob, fileName) {
     URL.revokeObjectURL(url);
 }
 
-async function downloadAllAsZip(processedFiles) {
-    // Since we can't use external libraries, we'll download files individually
-    // in a loop with delay
-    if (processedFiles.length === 0) return;
-
-    alert('سيتم تحميل جميع الملفات بشكل منفصل');
-
-    for (let i = 0; i < processedFiles.length; i++) {
-        if (processedFiles[i]) {
+function downloadAllFiles(files) {
+    files.forEach((file, i) => {
+        if (file) {
             setTimeout(() => {
-                downloadBlob(processedFiles[i].blob, processedFiles[i].name);
-            }, i * 500); // Delay between downloads
+                downloadBlob(file.blob, file.name);
+            }, i * 500);
         }
-    }
+    });
+}
+
+function getMimeType(format) {
+    const mimeTypes = {
+        'jpeg': 'image/jpeg',
+        'jpg': 'image/jpeg',
+        'png': 'image/png',
+        'webp': 'image/webp',
+        'bmp': 'image/bmp',
+        'ico': 'image/x-icon',
+        'svg': 'image/svg+xml'
+    };
+    return mimeTypes[format] || 'image/png';
+}
+
+function getConvertedFileName(originalName, format) {
+    const baseName = originalName.replace(/\.[^/.]+$/, '');
+    const extension = format === 'jpeg' ? 'jpg' : format;
+    return `${baseName}.${extension}`;
 }

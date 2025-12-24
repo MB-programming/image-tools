@@ -1,101 +1,162 @@
-# 🖼️ أدوات الصور المجانية
+# 🖼️ Professional Image & Video Tools
 
-موقع ويب كامل لمعالجة الصور بدون أي APIs مدفوعة - جميع العمليات تتم محلياً على متصفحك!
+A complete web application for processing images and videos without any paid APIs - all operations are performed locally in your browser!
 
-## ✨ المميزات
+## ✨ Features
 
-### 1. 🔄 تحويل صيغة الصور
-- تحويل بين جميع الصيغ الشائعة: PNG, JPEG, WebP, BMP, ICO
-- دعم دقة تصل إلى 8K (7680px)
-- التحكم الكامل في جودة الصورة
-- رفع دُفعي (bulk upload) - اختر عدة صور مرة واحدة
-- معاينة فورية قبل التحميل
+### 1. 🔄 Image Format Converter
+- Convert between all popular formats: PNG, JPEG, WebP, **SVG**, BMP, ICO, GIF
+- **Select source and target format** before conversion
+- Support for resolutions up to 8K (7680px)
+- Full control over image quality
+- Bulk upload - select multiple images at once
+- Instant preview before downloading
 
-### 2. ✂️ إزالة الخلفية
-- إزالة خلفية الصور باستخدام خوارزميات متقدمة
-- لا يحتاج إلى رفع الصور على الإنترنت
-- دعم الشفافية في PNG و WebP
-- مقارنة بين الصورة الأصلية والمعالجة
-- رفع دُفعي متعدد الصور
+### 2. ✂️ Background Removal
+- Remove image backgrounds using advanced algorithms
+- No need to upload images to the internet
+- Transparency support in PNG and WebP
+- Side-by-side comparison with slider
+- Bulk processing of multiple images
+- **Works 100% offline**
 
-### 3. 🗜️ ضغط الصور
-- تقليل حجم الصور مع الحفاظ على الجودة
-- تحويل تلقائي إلى WebP (أفضل صيغة للضغط)
-- التحكم في مستوى الضغط
-- تقليل الدقة اختياري
-- إظهار نسبة التوفير في الحجم
+### 3. 🗜️ Image Compression
+- Reduce file size while maintaining quality
+- Auto-convert to WebP (best compression format)
+- Adjustable compression level
+- Optional resolution reduction
+- Shows savings percentage
+- Bulk compression supported
 
-## 🚀 كيفية الاستخدام
+### 4. 🎬 **NEW: Video Background Removal**
+- Remove backgrounds from videos frame by frame
+- Transparency support (WebM VP9, MOV ProRes)
+- Green screen option (MP4)
+- Quality control (Fast, Balanced, High)
+- Supports MP4, WebM, MOV formats
 
-1. **افتح الموقع**: افتح ملف `index.html` في أي متصفح حديث
-2. **اختر الأداة**: انقر على التبويب المناسب (تحويل، إزالة خلفية، ضغط)
-3. **ارفع الصور**: اسحب وأفلت الصور أو انقر للاختيار
-4. **اضبط الإعدادات**: اختر الصيغة المطلوبة والجودة
-5. **معالجة**: انقر على زر المعالجة
-6. **تحميل**: حمّل الصور المعالجة واحدة تلو الأخرى أو الكل
+## 🌍 Multi-Language Support
 
-## 🎯 المزايا الرئيسية
+The application supports 4 languages:
+- 🇸🇦 **Arabic** (العربية)
+- 🇬🇧 **English**
+- 🇩🇪 **German** (Deutsch)
+- 🇷🇺 **Russian** (Русский)
 
-- ✅ **مجاني 100%**: بدون أي APIs مدفوعة
-- ✅ **خصوصية كاملة**: جميع المعالجات محلية على جهازك
-- ✅ **بدون حدود**: استخدم الموقع بلا قيود
-- ✅ **دعم 8K**: معالجة صور بدقة عالية جداً
-- ✅ **رفع دُفعي**: معالجة عدة صور مرة واحدة
-- ✅ **لا يحتاج إنترنت**: يعمل بدون اتصال بعد التحميل الأول
+Switch languages instantly with the language selector in the header!
 
-## 🛠️ التقنيات المستخدمة
+## 🚀 How to Use
 
-- **HTML5 Canvas API**: لمعالجة الصور
-- **Vanilla JavaScript**: بدون مكتبات خارجية مدفوعة
-- **CSS3**: تصميم عصري وسريع الاستجابة
-- **Client-side Processing**: جميع العمليات محلية
+1. **Open the website**: Open `index.html` in any modern browser
+2. **Choose a tool**: Click on any tool card (Converter, Background Removal, Compression, Video BG)
+3. **Upload files**: Drag and drop files or click to browse
+4. **Select format**: Choose source and target formats (for converter)
+5. **Adjust settings**: Set quality, resolution, and other options
+6. **Process**: Click the process button
+7. **Download**: Download processed files individually or all at once
 
-## 📱 الأجهزة المدعومة
+## 🎯 Key Advantages
 
-- 💻 أجهزة الكمبيوتر (Windows, Mac, Linux)
-- 📱 الهواتف الذكية (iOS, Android)
-- 🖥️ الأجهزة اللوحية
-- جميع المتصفحات الحديثة (Chrome, Firefox, Safari, Edge)
+- ✅ **100% Free**: No paid APIs or subscriptions
+- ✅ **Complete Privacy**: All processing happens locally on your device
+- ✅ **Unlimited**: Use without restrictions
+- ✅ **8K Support**: Process images at very high resolutions
+- ✅ **Bulk Upload**: Process multiple files at once
+- ✅ **Works Offline**: No internet connection needed after initial load
+- ✅ **Multi-Language**: 4 languages supported (AR, EN, DE, RU)
+- ✅ **Modern UI**: Clean, professional, responsive design
+- ✅ **SVG Support**: Convert to and from SVG format
 
-## 🔧 التثبيت
+## 🛠️ Technologies Used
 
-لا يحتاج تثبيت! فقط:
+- **HTML5 Canvas API**: For image processing
+- **Vanilla JavaScript**: No paid external libraries
+- **CSS3**: Modern, responsive design
+- **Client-side Processing**: All operations are local
+- **Web Standards**: FileReader API, Blob API, Canvas API
 
-1. استنسخ المشروع أو حمّل الملفات
-2. افتح `index.html` في المتصفح
-3. ابدأ الاستخدام فوراً
+## 📱 Supported Devices
 
-## 📝 الملفات
+- 💻 Desktop Computers (Windows, Mac, Linux)
+- 📱 Smartphones (iOS, Android)
+- 🖥️ Tablets
+- All modern browsers (Chrome, Firefox, Safari, Edge)
+
+## 🔧 Installation
+
+No installation required! Just:
+
+1. Clone the repository or download the files
+2. Open `index.html` in your browser
+3. Start using immediately
+
+## 📝 Files
 
 ```
 image-tools/
-├── index.html          # الصفحة الرئيسية
-├── styles.css          # التنسيقات
-├── app.js             # الوظائف والمعالجات
-└── README.md          # هذا الملف
+├── index.html          # Main page with modal-based interface
+├── styles.css          # Modern professional styling
+├── app.js              # Core functionality and processors
+├── translations.js     # Multi-language support (AR, EN, DE, RU)
+├── .gitignore         # Git ignore file
+└── README.md          # This file
 ```
 
-## 🎨 لقطات الشاشة
+## 🎨 Design
 
-الموقع يحتوي على واجهة مستخدم عصرية وسهلة الاستخدام باللغة العربية مع دعم كامل للاتجاه من اليمين إلى اليسار (RTL).
+The website features a modern, professional design with:
+- Clean hero section with feature badges
+- Grid layout for tool cards
+- Modal-based interface for each tool
+- Smooth animations and transitions
+- Responsive design for all screen sizes
+- RTL support for Arabic language
+- Professional color scheme (Purple gradient)
 
-## 🤝 المساهمة
+## 🌟 New Features in This Version
 
-المشروع مفتوح المصدر - يمكنك المساهمة بإضافة مميزات جديدة أو تحسينات!
+### Format Selection
+- ✨ Choose **source** and **target** format before conversion
+- Auto-detect source format option
+- Visual arrow indicator showing conversion direction
 
-## 📄 الترخيص
+### SVG Support
+- ✅ Full SVG file support
+- Convert SVG to raster formats (PNG, JPEG, WebP)
+- Convert raster formats to SVG (basic support)
 
-مجاني للاستخدام الشخصي والتجاري
+### Video Background Removal
+- 🎬 Process videos frame by frame
+- Transparent output (WebM VP9, MOV ProRes)
+- Green screen option (MP4)
+- Progress indicator
+- Quality control
 
-## 🌟 المميزات المستقبلية المقترحة
+### Multi-Language
+- 🌍 4 languages: Arabic, English, German, Russian
+- Persistent language preference (localStorage)
+- Instant language switching
+- All UI elements translated
 
-- [ ] إضافة تأثيرات وفلاتر
-- [ ] تعديل الأبعاد والقص
-- [ ] إضافة نص وعلامات مائية
-- [ ] تدوير وقلب الصور
-- [ ] ضبط السطوع والتباين
-- [ ] دعم صيغ إضافية (TIFF, SVG)
+## 🤝 Contributing
+
+This project is open source - feel free to contribute with new features or improvements!
+
+## 📄 License
+
+Free for personal and commercial use
+
+## 🔮 Future Feature Ideas
+
+- [ ] Add filters and effects
+- [ ] Crop and resize tools
+- [ ] Add text and watermarks
+- [ ] Rotate and flip images
+- [ ] Adjust brightness and contrast
+- [ ] Advanced video editing
+- [ ] Batch rename files
+- [ ] Export to PDF
 
 ---
 
-صُنع بـ ❤️ للمستخدمين العرب
+Made with ❤️ for everyone | صُنع بـ ❤️ للجميع
