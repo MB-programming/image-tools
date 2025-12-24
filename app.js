@@ -5,7 +5,8 @@ const state = {
     background: { files: [], processed: [] },
     compress: { files: [], processed: [] },
     videoBg: { file: null, processed: null },
-    videoConverter: { file: null, processed: null }
+    videoConverter: { file: null, processed: null },
+    scale: { files: [], processed: [] }
 };
 
 // ==================== INITIALIZATION ====================
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCompression();
     initializeVideoBackground();
     initializeVideoConverter();
+    initializeScale();
 });
 
 // ==================== TOOL CARDS & MODAL ====================
@@ -62,7 +64,8 @@ function openTool(tool) {
         'background': translate('tool-background-title'),
         'compress': translate('tool-compress-title'),
         'video-bg': translate('tool-video-bg-title'),
-        'video-converter': translate('tool-video-converter-title')
+        'video-converter': translate('tool-video-converter-title'),
+        'scale': translate('tool-scale-title')
     };
 
     const toolDescs = {
@@ -70,7 +73,8 @@ function openTool(tool) {
         'background': translate('tool-background-desc'),
         'compress': translate('tool-compress-desc'),
         'video-bg': translate('tool-video-bg-desc'),
-        'video-converter': translate('tool-video-converter-desc')
+        'video-converter': translate('tool-video-converter-desc'),
+        'scale': translate('tool-scale-desc')
     };
 
     modalTitle.textContent = toolTitles[tool] || '';
@@ -751,45 +755,8 @@ function updateCompressCard(card, originalFile, compressedBlob, format) {
 function createComparisonView(card, originalFile, processedBlob) {
     const imgContainer = card.querySelector('.preview-image-container');
     imgContainer.innerHTML = `
-        <div class="comparison-container">
-            <div class="comparison-before">
-                <img src="${URL.createObjectURL(originalFile)}" alt="Before">
-            </div>
-            <div class="comparison-after">
-                <img src="${URL.createObjectURL(processedBlob)}" alt="After">
-            </div>
-            <div class="comparison-slider"></div>
-        </div>
+        <img src="${URL.createObjectURL(processedBlob)}" alt="Processed">
     `;
-
-    setupComparisonSlider(imgContainer.querySelector('.comparison-container'));
-}
-
-function setupComparisonSlider(container) {
-    const slider = container.querySelector('.comparison-slider');
-    const afterDiv = container.querySelector('.comparison-after');
-    let isDragging = false;
-
-    const updateSlider = (x) => {
-        const rect = container.getBoundingClientRect();
-        const pos = ((x - rect.left) / rect.width) * 100;
-        const clampedPos = Math.max(0, Math.min(100, pos));
-
-        slider.style.left = clampedPos + '%';
-        afterDiv.style.clipPath = `polygon(${clampedPos}% 0, 100% 0, 100% 100%, ${clampedPos}% 100%)`;
-    };
-
-    slider.addEventListener('mousedown', () => isDragging = true);
-    document.addEventListener('mouseup', () => isDragging = false);
-    container.addEventListener('mousemove', (e) => {
-        if (isDragging) updateSlider(e.clientX);
-    });
-
-    slider.addEventListener('touchstart', () => isDragging = true);
-    document.addEventListener('touchend', () => isDragging = false);
-    container.addEventListener('touchmove', (e) => {
-        if (isDragging) updateSlider(e.touches[0].clientX);
-    });
 }
 
 function addDownloadButton(card, blob, fileName) {
@@ -1029,4 +996,256 @@ async function convertVideoFormat(file, targetFormat, quality) {
             resolve(file);
         }, 2000);
     });
+}
+
+// ==================== IMAGE SCALE/RESIZE ====================
+function initializeScale() {
+    const uploadArea = document.getElementById('scale-upload');
+    const fileInput = document.getElementById('scale-input');
+    const processBtn = document.getElementById('scale-process');
+    const widthInput = document.getElementById('scale-width');
+    const heightInput = document.getElementById('scale-height');
+    const maintainRatio = document.getElementById('scale-maintain-ratio');
+    const qualitySlider = document.getElementById('scale-quality');
+    const qualityValue = document.getElementById('scale-quality-value');
+
+    if (!uploadArea || !fileInput) return;
+
+    // Quality slider
+    if (qualitySlider && qualityValue) {
+        qualitySlider.addEventListener('input', (e) => {
+            qualityValue.textContent = e.target.value;
+        });
+    }
+
+    // Maintain aspect ratio logic
+    if (widthInput && heightInput && maintainRatio) {
+        let aspectRatio = null;
+        let isUpdating = false;
+
+        widthInput.addEventListener('input', () => {
+            if (maintainRatio.checked && aspectRatio && !isUpdating) {
+                isUpdating = true;
+                heightInput.value = Math.round(widthInput.value / aspectRatio);
+                isUpdating = false;
+            }
+        });
+
+        heightInput.addEventListener('input', () => {
+            if (maintainRatio.checked && aspectRatio && !isUpdating) {
+                isUpdating = true;
+                widthInput.value = Math.round(heightInput.value * aspectRatio);
+                isUpdating = false;
+            }
+        });
+    }
+
+    // Upload area events
+    uploadArea.addEventListener('click', (e) => {
+        if (e.target === uploadArea || uploadArea.contains(e.target)) {
+            fileInput.click();
+        }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+        handleScaleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        handleScaleFiles(e.target.files);
+    });
+
+    if (processBtn) {
+        processBtn.addEventListener('click', processScaleImages);
+    }
+}
+
+function handleScaleFiles(files) {
+    if (!files.length) return;
+
+    state.scale.files = Array.from(files);
+    state.scale.processed = [];
+
+    // Show options
+    const optionsPanel = document.getElementById('scale-options');
+    if (optionsPanel) optionsPanel.style.display = 'block';
+
+    // Set initial dimensions from first image
+    if (files[0]) {
+        const img = new Image();
+        img.onload = () => {
+            const widthInput = document.getElementById('scale-width');
+            const heightInput = document.getElementById('scale-height');
+            if (widthInput) widthInput.placeholder = img.width;
+            if (heightInput) heightInput.placeholder = img.height;
+
+            // Store aspect ratio
+            window.scaleAspectRatio = img.width / img.height;
+        };
+        img.src = URL.createObjectURL(files[0]);
+    }
+
+    // Clear preview
+    const preview = document.getElementById('scale-preview');
+    if (preview) preview.innerHTML = '';
+
+    // Show file count
+    showProgress('scale');
+    updateProgress('scale', 0, files.length);
+    hideProgress('scale');
+}
+
+async function processScaleImages() {
+    const files = state.scale.files;
+    if (!files.length) return;
+
+    const widthInput = document.getElementById('scale-width');
+    const heightInput = document.getElementById('scale-height');
+    const maintainRatio = document.getElementById('scale-maintain-ratio');
+    const formatSelect = document.getElementById('scale-format');
+    const qualitySlider = document.getElementById('scale-quality');
+
+    const targetWidth = parseInt(widthInput.value) || null;
+    const targetHeight = parseInt(heightInput.value) || null;
+    const format = formatSelect.value;
+    const quality = parseInt(qualitySlider.value) / 100;
+
+    if (!targetWidth && !targetHeight) {
+        alert(translate('scale-error') || 'Please enter at least width or height');
+        return;
+    }
+
+    showProgress('scale');
+    const preview = document.getElementById('scale-preview');
+    if (preview) preview.innerHTML = '';
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        updateProgress('scale', i, files.length);
+
+        try {
+            const scaledBlob = await scaleImage(file, targetWidth, targetHeight, maintainRatio.checked, format, quality);
+            state.scale.processed.push(scaledBlob);
+
+            // Add preview card
+            addScalePreview(file, scaledBlob, i);
+        } catch (error) {
+            console.error('Error scaling image:', error);
+        }
+    }
+
+    updateProgress('scale', files.length, files.length);
+    setTimeout(() => hideProgress('scale'), 500);
+
+    // Add download all button
+    if (state.scale.processed.length > 1) {
+        addDownloadAllButton('scale', state.scale.processed);
+    }
+}
+
+async function scaleImage(file, targetWidth, targetHeight, maintainRatio, format, quality) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let newWidth = targetWidth;
+            let newHeight = targetHeight;
+
+            // Calculate dimensions
+            if (maintainRatio) {
+                const aspectRatio = img.width / img.height;
+                if (targetWidth && !targetHeight) {
+                    newWidth = targetWidth;
+                    newHeight = Math.round(targetWidth / aspectRatio);
+                } else if (targetHeight && !targetWidth) {
+                    newHeight = targetHeight;
+                    newWidth = Math.round(targetHeight * aspectRatio);
+                } else if (targetWidth && targetHeight) {
+                    // Use the width as primary, adjust height
+                    newWidth = targetWidth;
+                    newHeight = Math.round(targetWidth / aspectRatio);
+                }
+            } else {
+                newWidth = targetWidth || img.width;
+                newHeight = targetHeight || img.height;
+            }
+
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            // Use high-quality scaling
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+            // Determine output format
+            let mimeType = file.type;
+            let extension = file.name.split('.').pop();
+
+            if (format !== 'original') {
+                mimeType = `image/${format}`;
+                extension = format;
+            }
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    blob.name = file.name.replace(/\.[^.]+$/, `.${extension}`);
+                    resolve(blob);
+                } else {
+                    reject(new Error('Canvas to Blob conversion failed'));
+                }
+            }, mimeType, quality);
+        };
+
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+function addScalePreview(originalFile, scaledBlob, index) {
+    const preview = document.getElementById('scale-preview');
+    if (!preview) return;
+
+    const card = document.createElement('div');
+    card.className = 'preview-card';
+
+    // Get dimensions
+    const img = new Image();
+    img.onload = () => {
+        const originalSize = (originalFile.size / 1024).toFixed(1);
+        const scaledSize = (scaledBlob.size / 1024).toFixed(1);
+        const savings = ((1 - scaledBlob.size / originalFile.size) * 100).toFixed(1);
+
+        card.innerHTML = `
+            <div class="preview-image-container">
+                <img src="${URL.createObjectURL(scaledBlob)}" alt="Scaled ${index + 1}">
+            </div>
+            <div class="preview-info">
+                <p class="preview-filename">${originalFile.name}</p>
+                <p class="preview-details">
+                    ${img.width}x${img.height} • ${scaledSize} KB
+                    ${savings > 0 ? `<span class="savings">-${savings}%</span>` : ''}
+                </p>
+            </div>
+        `;
+
+        preview.appendChild(card);
+
+        // Add download button
+        addDownloadButton(card, scaledBlob, scaledBlob.name || `scaled_${originalFile.name}`);
+    };
+    img.src = URL.createObjectURL(scaledBlob);
 }

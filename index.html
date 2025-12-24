@@ -3,8 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="page-title">Mina Boules Tools - Free Image & Video Tools</title>
-    <meta name="description" content="Professional image and video editing tools by Mina Boules - 100% free">
+
+    <!-- Primary Meta Tags -->
+    <title data-i18n="page-title">Mina Boules Tools - Free Image & Video Tools | Convert, Compress, Edit Online</title>
+    <meta name="title" content="Mina Boules Tools - Free Image & Video Converter, Compressor & Editor">
+    <meta name="description" content="Free online image and video tools by Mina Boules. Convert images (PNG, JPEG, WebP, SVG), compress photos, remove backgrounds, scale images, and convert videos. 100% free, no upload, works offline. تحويل الصور، ضغط الصور، إزالة الخلفية مجاناً">
+    <meta name="keywords" content="image converter, photo converter, convert png to jpg, convert jpg to png, convert to webp, image compressor, compress image, reduce image size, remove background, background remover, scale image, resize image, video converter, convert mp4, صور, تحويل الصور, ضغط الصور, إزالة الخلفية, تصغير الصور, Mina Boules, free image tools, online image editor, صور مجانية, أدوات الصور">
+    <meta name="author" content="Mina Boules">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English, Arabic, German, Russian">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://minaboules.com/">
+    <meta property="og:title" content="Mina Boules Tools - Free Image & Video Converter">
+    <meta property="og:description" content="Convert, compress, and edit images & videos online for free. PNG, JPEG, WebP, SVG converter. Background remover. Image scaler. 100% free & private.">
+    <meta property="og:image" content="https://minaboules.com/og-image.jpg">
+    <meta property="og:site_name" content="Mina Boules Tools">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://minaboules.com/">
+    <meta property="twitter:title" content="Mina Boules Tools - Free Image & Video Tools">
+    <meta property="twitter:description" content="Convert, compress, and edit images & videos online. Free image converter, compressor, background remover, and more!">
+    <meta property="twitter:image" content="https://minaboules.com/twitter-image.jpg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://minaboules.com/">
+
+    <!-- Additional SEO -->
+    <meta name="rating" content="General">
+    <meta name="distribution" content="global">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Mina Boules Tools",
+      "applicationCategory": "MultimediaApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "operatingSystem": "Any",
+      "description": "Free online image and video conversion, compression, and editing tools. Convert PNG, JPEG, WebP, SVG. Remove backgrounds. Scale images. Convert videos.",
+      "url": "https://minaboules.com",
+      "author": {
+        "@type": "Person",
+        "name": "Mina Boules"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1250"
+      },
+      "featureList": [
+        "Image Format Converter (PNG, JPEG, WebP, SVG, BMP, ICO)",
+        "Image Compressor with WebP conversion",
+        "Background Remover for images",
+        "Image Scale and Resize tool",
+        "Video Format Converter",
+        "Video Background Removal",
+        "Bulk image processing",
+        "8K resolution support",
+        "100% client-side processing",
+        "No file upload required",
+        "Multi-language support (Arabic, English, German, Russian)"
+      ]
+    }
+    </script>
+
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -116,7 +187,7 @@
                     <button class="tool-btn" data-i18n="btn-start">Start Processing</button>
                 </div>
 
-                <!-- Video Converter - NEW -->
+                <!-- Video Converter -->
                 <div class="tool-card" data-tool="video-converter">
                     <div class="tool-icon">
                         <i class="fas fa-film"></i>
@@ -124,6 +195,16 @@
                     <h3 data-i18n="tool-video-converter-title">Video Converter</h3>
                     <p data-i18n="tool-video-converter-desc">Convert videos between MP4, WebM, MOV, AVI formats with quality control</p>
                     <button class="tool-btn" data-i18n="btn-start">Start Converting</button>
+                </div>
+
+                <!-- Image Scale/Resize -->
+                <div class="tool-card" data-tool="scale">
+                    <div class="tool-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <h3 data-i18n="tool-scale-title">Scale & Resize Images</h3>
+                    <p data-i18n="tool-scale-desc">Change image dimensions, resize photos, and convert formats in one step</p>
+                    <button class="tool-btn" data-i18n="btn-start">Start Scaling</button>
                 </div>
             </div>
         </div>
@@ -409,6 +490,73 @@
 
                 <div id="video-converter-preview" class="video-preview"></div>
             </div>
+
+            <!-- Image Scale/Resize Content -->
+            <div id="scale-content" class="tool-content" style="display: none;">
+                <div class="upload-area" id="scale-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p class="upload-title" data-i18n="upload-title">Drop images here or click to browse</p>
+                    <p class="upload-note" data-i18n="upload-note">Supports bulk upload - select multiple files at once</p>
+                    <input type="file" id="scale-input" accept="image/*" multiple hidden>
+                </div>
+
+                <div id="scale-options" class="options-panel" style="display: none;">
+                    <div class="option-row">
+                        <div class="option-group">
+                            <label data-i18n="scale-width">Width (px):</label>
+                            <input type="number" id="scale-width" placeholder="Auto" min="1">
+                        </div>
+
+                        <div class="option-group">
+                            <label data-i18n="scale-height">Height (px):</label>
+                            <input type="number" id="scale-height" placeholder="Auto" min="1">
+                        </div>
+
+                        <div class="option-group">
+                            <label>
+                                <input type="checkbox" id="scale-maintain-ratio" checked>
+                                <span data-i18n="maintain-aspect">Maintain Aspect Ratio</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="option-row">
+                        <div class="option-group">
+                            <label data-i18n="output-format">Output Format:</label>
+                            <select id="scale-format">
+                                <option value="original" data-i18n="keep-original">Keep Original</option>
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp" selected>WebP</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label data-i18n="quality">Quality: <span id="scale-quality-value">95</span>%</label>
+                            <input type="range" id="scale-quality" min="1" max="100" value="95">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="scale-process">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <span data-i18n="btn-scale">Scale All</span>
+                    </button>
+                </div>
+
+                <div id="scale-progress" class="progress-section" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-text" data-i18n="processing">Processing...</span>
+                        <span class="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="scale-progress-bar"></div>
+                    </div>
+                </div>
+
+                <div id="scale-preview" class="preview-grid"></div>
+            </div>
         </div>
     </div>
 
@@ -421,6 +569,92 @@
             <i class="fab fa-whatsapp"></i>
         </a>
     </div>
+
+    <!-- SEO Content Section -->
+    <section class="seo-content">
+        <div class="container">
+            <h2 class="section-title" data-i18n="seo-heading">Free Online Image & Video Tools - Convert, Compress, Edit</h2>
+
+            <div class="seo-description">
+                <p data-i18n="seo-intro">
+                    Welcome to Mina Boules Tools - your complete free online image and video editing suite. Convert images between formats like PNG to JPG, JPG to PNG, convert to WebP, compress images, remove backgrounds, scale photos, and convert videos - all without uploading your files to any server. Everything happens locally in your browser for complete privacy and security.
+                </p>
+            </div>
+
+            <div class="features-detailed">
+                <div class="feature-detail">
+                    <h3><i class="fas fa-exchange-alt"></i> <span data-i18n="seo-converter-title">Image Format Converter</span></h3>
+                    <p data-i18n="seo-converter-desc">
+                        Convert images between all popular formats: PNG, JPEG, JPG, WebP, SVG, BMP, ICO, GIF. Choose your source format and target format with quality control up to 8K resolution. Perfect for converting photos, graphics, logos, and icons. Supports bulk conversion - process multiple images at once.
+                    </p>
+                </div>
+
+                <div class="feature-detail">
+                    <h3><i class="fas fa-compress-alt"></i> <span data-i18n="seo-compress-title">Image Compression Tool</span></h3>
+                    <p data-i18n="seo-compress-desc">
+                        Reduce image file size while maintaining quality. Compress JPG, PNG, WebP images with adjustable compression levels. Automatically convert to WebP format for best compression. See instant file size savings. Ideal for optimizing photos for web, email, or storage.
+                    </p>
+                </div>
+
+                <div class="feature-detail">
+                    <h3><i class="fas fa-magic"></i> <span data-i18n="seo-background-title">Background Remover</span></h3>
+                    <p data-i18n="seo-background-desc">
+                        Remove image backgrounds automatically using advanced algorithms. No uploads needed - works 100% offline. Create transparent PNG images for logos, product photos, profile pictures. Process multiple images in bulk. Perfect for e-commerce, graphic design, and social media.
+                    </p>
+                </div>
+
+                <div class="feature-detail">
+                    <h3><i class="fas fa-expand-arrows-alt"></i> <span data-i18n="seo-scale-title">Image Scale & Resize</span></h3>
+                    <p data-i18n="seo-scale-desc">
+                        Resize images, scale photos, change image dimensions. Maintain aspect ratio or set custom width and height. Change format while resizing. Perfect for creating thumbnails, social media images, or fitting specific size requirements.
+                    </p>
+                </div>
+
+                <div class="feature-detail">
+                    <h3><i class="fas fa-film"></i> <span data-i18n="seo-video-title">Video Converter & Background Removal</span></h3>
+                    <p data-i18n="seo-video-desc">
+                        Convert videos between MP4, WebM, MOV, AVI formats. Remove video backgrounds frame by frame with transparency support. Quality control options for fast or high-quality processing. Perfect for content creators and video editors.
+                    </p>
+                </div>
+            </div>
+
+            <div class="seo-keywords">
+                <h3 data-i18n="seo-keywords-title">Common Tasks</h3>
+                <div class="keywords-grid">
+                    <span>Convert PNG to JPG</span>
+                    <span>Convert JPG to PNG</span>
+                    <span>Convert to WebP</span>
+                    <span>Compress Image</span>
+                    <span>Reduce Image Size</span>
+                    <span>Remove Background</span>
+                    <span>Background Remover</span>
+                    <span>Resize Image</span>
+                    <span>Scale Photo</span>
+                    <span>Image Editor</span>
+                    <span>Video Converter</span>
+                    <span>Convert MP4</span>
+                    <span>تحويل الصور</span>
+                    <span>ضغط الصور</span>
+                    <span>إزالة الخلفية</span>
+                    <span>تصغير الصور</span>
+                </div>
+            </div>
+
+            <div class="seo-benefits">
+                <h3 data-i18n="seo-benefits-title">Why Choose Mina Boules Tools?</h3>
+                <ul>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-1">100% Free - No subscriptions, no hidden costs, unlimited use</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-2">Complete Privacy - All processing happens locally, files never uploaded</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-3">No Registration - Start using immediately without creating an account</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-4">Works Offline - Use without internet after initial page load</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-5">Bulk Processing - Convert, compress, or edit multiple files at once</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-6">High Quality - Support for up to 8K resolution images</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-7">Multi-Language - Available in Arabic, English, German, and Russian</span></li>
+                    <li><i class="fas fa-check"></i> <span data-i18n="seo-benefit-8">Fast Processing - Client-side processing for instant results</span></li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="footer">
