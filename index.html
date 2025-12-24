@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="page-title">Free Image & Video Tools - Convert, Compress, Remove Background</title>
-    <meta name="description" content="Professional image and video editing tools - 100% free, no uploads required">
+    <title data-i18n="page-title">Mina Boules Tools - Free Image & Video Tools</title>
+    <meta name="description" content="Professional image and video editing tools by Mina Boules - 100% free">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -25,14 +26,20 @@
                             </linearGradient>
                         </defs>
                     </svg>
-                    <span class="logo-text" data-i18n="site-name">ImageTools</span>
+                    <span class="logo-text" data-i18n="site-name">Mina Boules Tools</span>
                 </div>
 
-                <div class="language-switcher">
-                    <button class="lang-btn active" data-lang="ar">العربية</button>
-                    <button class="lang-btn" data-lang="en">English</button>
-                    <button class="lang-btn" data-lang="de">Deutsch</button>
-                    <button class="lang-btn" data-lang="ru">Русский</button>
+                <div class="header-actions">
+                    <a href="https://minaboules.com" target="_blank" class="website-link">
+                        <i class="fas fa-globe"></i>
+                        <span data-i18n="visit-website">Visit Website</span>
+                    </a>
+                    <div class="language-switcher">
+                        <button class="lang-btn active" data-lang="ar">العربية</button>
+                        <button class="lang-btn" data-lang="en">English</button>
+                        <button class="lang-btn" data-lang="de">Deutsch</button>
+                        <button class="lang-btn" data-lang="ru">Русский</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -46,19 +53,19 @@
 
             <div class="hero-features">
                 <div class="feature-badge">
-                    <span class="badge-icon">🔒</span>
+                    <i class="fas fa-lock"></i>
                     <span data-i18n="feature-private">100% Private</span>
                 </div>
                 <div class="feature-badge">
-                    <span class="badge-icon">⚡</span>
+                    <i class="fas fa-bolt"></i>
                     <span data-i18n="feature-fast">Lightning Fast</span>
                 </div>
                 <div class="feature-badge">
-                    <span class="badge-icon">✨</span>
+                    <i class="fas fa-star"></i>
                     <span data-i18n="feature-free">Completely Free</span>
                 </div>
                 <div class="feature-badge">
-                    <span class="badge-icon">🎨</span>
+                    <i class="fas fa-paint-brush"></i>
                     <span data-i18n="feature-quality">High Quality</span>
                 </div>
             </div>
@@ -72,14 +79,7 @@
                 <!-- Image Converter -->
                 <div class="tool-card" data-tool="converter">
                     <div class="tool-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M8 4L4 8L8 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M16 12L20 8L16 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 8H20" stroke="currentColor" stroke-width="2"/>
-                            <path d="M8 20L4 16L8 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M16 12L20 16L16 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 16H20" stroke="currentColor" stroke-width="2"/>
-                        </svg>
+                        <i class="fas fa-exchange-alt"></i>
                     </div>
                     <h3 data-i18n="tool-converter-title">Image Converter</h3>
                     <p data-i18n="tool-converter-desc">Convert between PNG, JPEG, WebP, SVG, BMP, ICO with custom quality settings</p>
@@ -89,10 +89,7 @@
                 <!-- Background Removal -->
                 <div class="tool-card" data-tool="background">
                     <div class="tool-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M4 10L8 14L20 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <i class="fas fa-magic"></i>
                     </div>
                     <h3 data-i18n="tool-background-title">Remove Background</h3>
                     <p data-i18n="tool-background-desc">Automatically remove backgrounds from images using advanced AI algorithms</p>
@@ -102,10 +99,7 @@
                 <!-- Image Compression -->
                 <div class="tool-card" data-tool="compress">
                     <div class="tool-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M4 12L12 4L20 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 20L12 12L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <i class="fas fa-compress-alt"></i>
                     </div>
                     <h3 data-i18n="tool-compress-title">Compress Images</h3>
                     <p data-i18n="tool-compress-desc">Reduce file size while maintaining quality - auto convert to WebP</p>
@@ -115,14 +109,21 @@
                 <!-- Video Background Removal -->
                 <div class="tool-card" data-tool="video-bg">
                     <div class="tool-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M8 12L14 9V15L8 12Z" fill="currentColor"/>
-                        </svg>
+                        <i class="fas fa-video"></i>
                     </div>
                     <h3 data-i18n="tool-video-bg-title">Video Background Removal</h3>
                     <p data-i18n="tool-video-bg-desc">Remove backgrounds from videos frame by frame with transparency support</p>
                     <button class="tool-btn" data-i18n="btn-start">Start Processing</button>
+                </div>
+
+                <!-- Video Converter - NEW -->
+                <div class="tool-card" data-tool="video-converter">
+                    <div class="tool-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3 data-i18n="tool-video-converter-title">Video Converter</h3>
+                    <p data-i18n="tool-video-converter-desc">Convert videos between MP4, WebM, MOV, AVI formats with quality control</p>
+                    <button class="tool-btn" data-i18n="btn-start">Start Converting</button>
                 </div>
             </div>
         </div>
@@ -132,7 +133,7 @@
     <div class="modal" id="tool-modal">
         <div class="modal-overlay"></div>
         <div class="modal-content">
-            <button class="modal-close" id="close-modal">×</button>
+            <button class="modal-close" id="close-modal"><i class="fas fa-times"></i></button>
 
             <div class="modal-header">
                 <h2 id="modal-title"></h2>
@@ -154,7 +155,7 @@
                             <option value="gif">GIF</option>
                         </select>
                     </div>
-                    <div class="arrow-icon">→</div>
+                    <div class="arrow-icon"><i class="fas fa-arrow-right"></i></div>
                     <div class="format-group">
                         <label data-i18n="convert-to">Convert To:</label>
                         <select id="to-format">
@@ -170,10 +171,7 @@
 
                 <div class="upload-area" id="converter-upload">
                     <div class="upload-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4V16M12 4L8 8M12 4L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 17V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <p class="upload-title" data-i18n="upload-title">Drop files here or click to browse</p>
                     <p class="upload-note" data-i18n="upload-note">Supports bulk upload - select multiple files at once</p>
@@ -199,8 +197,19 @@
                     </div>
 
                     <button class="btn btn-primary" id="converter-convert">
+                        <i class="fas fa-sync-alt"></i>
                         <span data-i18n="btn-convert">Convert All</span>
                     </button>
+                </div>
+
+                <div id="converter-progress" class="progress-section" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-text" data-i18n="processing">Processing...</span>
+                        <span class="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="converter-progress-bar"></div>
+                    </div>
                 </div>
 
                 <div id="converter-preview" class="preview-grid"></div>
@@ -210,10 +219,7 @@
             <div id="background-content" class="tool-content" style="display: none;">
                 <div class="upload-area" id="background-upload">
                     <div class="upload-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4V16M12 4L8 8M12 4L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 17V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <p class="upload-title" data-i18n="upload-title">Drop images here or click to browse</p>
                     <p class="upload-note" data-i18n="upload-note-bg">Supports bulk upload</p>
@@ -231,8 +237,19 @@
                     </div>
 
                     <button class="btn btn-primary" id="background-process">
+                        <i class="fas fa-cut"></i>
                         <span data-i18n="btn-remove-bg">Remove Background</span>
                     </button>
+                </div>
+
+                <div id="background-progress" class="progress-section" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-text" data-i18n="processing">Processing...</span>
+                        <span class="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="background-progress-bar"></div>
+                    </div>
                 </div>
 
                 <div id="background-preview" class="preview-grid"></div>
@@ -242,10 +259,7 @@
             <div id="compress-content" class="tool-content" style="display: none;">
                 <div class="upload-area" id="compress-upload">
                     <div class="upload-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4V16M12 4L8 8M12 4L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 17V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <p class="upload-title" data-i18n="upload-title">Drop images here or click to browse</p>
                     <p class="upload-note" data-i18n="upload-note-compress">Bulk compression supported</p>
@@ -280,8 +294,19 @@
                     </div>
 
                     <button class="btn btn-primary" id="compress-process">
+                        <i class="fas fa-compress"></i>
                         <span data-i18n="btn-compress">Compress All</span>
                     </button>
+                </div>
+
+                <div id="compress-progress" class="progress-section" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-text" data-i18n="processing">Processing...</span>
+                        <span class="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="compress-progress-bar"></div>
+                    </div>
                 </div>
 
                 <div id="compress-preview" class="preview-grid"></div>
@@ -289,12 +314,14 @@
 
             <!-- Video Background Removal Content -->
             <div id="video-bg-content" class="tool-content" style="display: none;">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span data-i18n="video-bg-info">Note: Video background removal is a demo feature. Full implementation requires server-side processing for best results.</span>
+                </div>
+
                 <div class="upload-area" id="video-bg-upload">
                     <div class="upload-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 4V16M12 4L8 8M12 4L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M4 17V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <p class="upload-title" data-i18n="upload-video-title">Drop video here or click to browse</p>
                     <p class="upload-note" data-i18n="upload-video-note">Supports MP4, WebM, MOV formats (max 100MB recommended)</p>
@@ -311,31 +338,130 @@
                         </select>
                     </div>
 
-                    <div class="option-group">
-                        <label data-i18n="processing-quality">Processing Quality:</label>
-                        <select id="video-quality">
-                            <option value="fast" data-i18n="quality-fast">Fast (Lower Quality)</option>
-                            <option value="balanced" selected data-i18n="quality-balanced">Balanced</option>
-                            <option value="high" data-i18n="quality-high">High (Slower)</option>
-                        </select>
-                    </div>
-
                     <button class="btn btn-primary" id="video-bg-process">
+                        <i class="fas fa-play"></i>
                         <span data-i18n="btn-process-video">Process Video</span>
                     </button>
                 </div>
 
                 <div id="video-bg-preview" class="video-preview"></div>
             </div>
+
+            <!-- Video Converter Content - NEW -->
+            <div id="video-converter-content" class="tool-content" style="display: none;">
+                <div class="format-selection">
+                    <div class="format-group">
+                        <label data-i18n="convert-from">Convert From:</label>
+                        <select id="video-from-format">
+                            <option value="auto" data-i18n="format-auto">Auto Detect</option>
+                            <option value="mp4">MP4</option>
+                            <option value="webm">WebM</option>
+                            <option value="mov">MOV</option>
+                            <option value="avi">AVI</option>
+                        </select>
+                    </div>
+                    <div class="arrow-icon"><i class="fas fa-arrow-right"></i></div>
+                    <div class="format-group">
+                        <label data-i18n="convert-to">Convert To:</label>
+                        <select id="video-to-format">
+                            <option value="mp4" selected>MP4</option>
+                            <option value="webm">WebM</option>
+                            <option value="mov">MOV</option>
+                            <option value="avi">AVI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="upload-area" id="video-converter-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p class="upload-title" data-i18n="upload-video-title">Drop video here or click to browse</p>
+                    <p class="upload-note" data-i18n="upload-video-converter-note">Supports MP4, WebM, MOV, AVI formats</p>
+                    <input type="file" id="video-converter-input" accept="video/*" hidden>
+                </div>
+
+                <div id="video-converter-options" class="options-panel" style="display: none;">
+                    <div class="option-group">
+                        <label data-i18n="video-quality">Video Quality:</label>
+                        <select id="video-converter-quality">
+                            <option value="low">Low (Faster)</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High (Slower)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" id="video-converter-convert">
+                        <i class="fas fa-sync-alt"></i>
+                        <span data-i18n="btn-convert-video">Convert Video</span>
+                    </button>
+                </div>
+
+                <div id="video-converter-progress" class="progress-section" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-text" data-i18n="processing">Processing...</span>
+                        <span class="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="video-converter-progress-bar"></div>
+                    </div>
+                </div>
+
+                <div id="video-converter-preview" class="video-preview"></div>
+            </div>
         </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <a href="tel:01222112819" class="fab-button fab-phone" title="اتصل الآن">
+            <i class="fas fa-phone-alt"></i>
+        </a>
+        <a href="https://wa.me/201014959132" target="_blank" class="fab-button fab-whatsapp" title="واتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
     </div>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p data-i18n="footer-privacy">🔒 All processing happens locally on your device - your files never leave your browser</p>
-                <p data-i18n="footer-free">✨ 100% Free & Unlimited - No registration required</p>
+                <div class="footer-section">
+                    <h3 data-i18n="about-title">About Mina Boules Tools</h3>
+                    <p data-i18n="footer-privacy">
+                        <i class="fas fa-lock"></i>
+                        All processing happens locally on your device - your files never leave your browser
+                    </p>
+                    <p data-i18n="footer-free">
+                        <i class="fas fa-check-circle"></i>
+                        100% Free & Unlimited - No registration required
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3 data-i18n="contact-title">Contact & Support</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> <a href="tel:01222112819">01222112819</a></p>
+                        <p><i class="fab fa-whatsapp"></i> <a href="https://wa.me/201014959132">01014959132</a></p>
+                        <p><i class="fas fa-globe"></i> <a href="https://minaboules.com" target="_blank">minaboules.com</a></p>
+                    </div>
+
+                    <div class="support-buttons">
+                        <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                            <input type="hidden" name="hosted_button_id" value="YOUR_BUTTON_ID" />
+                            <input type="hidden" name="business" value="minanarmar59@gmail.com" />
+                            <input type="hidden" name="currency_code" value="USD" />
+                            <button type="submit" class="paypal-btn">
+                                <i class="fab fa-paypal"></i>
+                                <span data-i18n="support-paypal">Support via PayPal</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 <a href="https://minaboules.com" target="_blank">Mina Boules</a>. All rights reserved.</p>
             </div>
         </div>
     </footer>

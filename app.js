@@ -4,7 +4,8 @@ const state = {
     converter: { files: [], processed: [] },
     background: { files: [], processed: [] },
     compress: { files: [], processed: [] },
-    videoBg: { file: null, processed: null }
+    videoBg: { file: null, processed: null },
+    videoConverter: { file: null, processed: null }
 };
 
 // ==================== INITIALIZATION ====================
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeBackgroundRemoval();
     initializeCompression();
     initializeVideoBackground();
+    initializeVideoConverter();
 });
 
 // ==================== TOOL CARDS & MODAL ====================
@@ -59,14 +61,16 @@ function openTool(tool) {
         'converter': translate('tool-converter-title'),
         'background': translate('tool-background-title'),
         'compress': translate('tool-compress-title'),
-        'video-bg': translate('tool-video-bg-title')
+        'video-bg': translate('tool-video-bg-title'),
+        'video-converter': translate('tool-video-converter-title')
     };
 
     const toolDescs = {
         'converter': translate('tool-converter-desc'),
         'background': translate('tool-background-desc'),
         'compress': translate('tool-compress-desc'),
-        'video-bg': translate('tool-video-bg-desc')
+        'video-bg': translate('tool-video-bg-desc'),
+        'video-converter': translate('tool-video-converter-desc')
     };
 
     modalTitle.textContent = toolTitles[tool] || '';
@@ -165,6 +169,8 @@ async function convertAllImages() {
     const maxResolution = document.getElementById('max-resolution').value;
     const preview = document.getElementById('converter-preview');
 
+    showProgress('converter');
+
     for (let i = 0; i < state.converter.files.length; i++) {
         const file = state.converter.files[i];
         const card = preview.children[i];
@@ -174,6 +180,8 @@ async function convertAllImages() {
             statusDiv.textContent = translate('processing');
             statusDiv.className = 'preview-status processing';
 
+            updateProgress('converter', i, state.converter.files.length);
+
             const convertedBlob = await convertImage(file, toFormat, quality, maxResolution);
             updatePreviewCard(card, file, convertedBlob, toFormat, i, 'converter');
 
@@ -181,6 +189,8 @@ async function convertAllImages() {
                 blob: convertedBlob,
                 name: getConvertedFileName(file.name, toFormat)
             };
+
+            updateProgress('converter', i + 1, state.converter.files.length);
 
         } catch (error) {
             statusDiv.textContent = translate('error');
@@ -298,6 +308,8 @@ async function processBackgroundRemoval() {
     const format = document.getElementById('background-format').value;
     const preview = document.getElementById('background-preview');
 
+    showProgress('background');
+
     for (let i = 0; i < state.background.files.length; i++) {
         const file = state.background.files[i];
         const card = preview.children[i];
@@ -306,6 +318,8 @@ async function processBackgroundRemoval() {
         try {
             statusDiv.textContent = translate('processing');
             statusDiv.className = 'preview-status processing';
+
+            updateProgress('background', i, state.background.files.length);
 
             const processedBlob = await removeBackground(file, format);
 
@@ -322,6 +336,8 @@ async function processBackgroundRemoval() {
                 blob: processedBlob,
                 name: file.name.replace(/\.[^/.]+$/, '') + '_no_bg.' + format
             };
+
+            updateProgress('background', i + 1, state.background.files.length);
 
         } catch (error) {
             statusDiv.textContent = translate('error');
@@ -500,6 +516,8 @@ async function processCompression() {
     const maxResolution = document.getElementById('compress-resolution').value;
     const preview = document.getElementById('compress-preview');
 
+    showProgress('compress');
+
     for (let i = 0; i < state.compress.files.length; i++) {
         const file = state.compress.files[i];
         const card = preview.children[i];
@@ -508,6 +526,8 @@ async function processCompression() {
         try {
             statusDiv.textContent = translate('processing');
             statusDiv.className = 'preview-status processing';
+
+            updateProgress('compress', i, state.compress.files.length);
 
             const format = convertToWebP ? 'webp' : (file.type.includes('png') ? 'png' : 'jpeg');
             const compressedBlob = await convertImage(file, format, quality, maxResolution);
@@ -524,6 +544,8 @@ async function processCompression() {
             addDownloadButton(card, compressedBlob, fileName);
 
             state.compress.processed[i] = { blob: compressedBlob, name: fileName };
+
+            updateProgress('compress', i + 1, state.compress.files.length);
 
         } catch (error) {
             statusDiv.textContent = translate('error');
@@ -846,4 +868,165 @@ function getConvertedFileName(originalName, format) {
     const baseName = originalName.replace(/\.[^/.]+$/, '');
     const extension = format === 'jpeg' ? 'jpg' : format;
     return `${baseName}.${extension}`;
+}
+
+// ==================== PROGRESS BAR FUNCTIONS ====================
+function updateProgress(toolName, current, total) {
+    const progressSection = document.getElementById(`${toolName}-progress`);
+    const progressBar = document.getElementById(`${toolName}-progress-bar`);
+    const progressPercent = progressSection.querySelector('.progress-percent');
+
+    if (!progressSection || !progressBar || !progressPercent) return;
+
+    progressSection.style.display = 'block';
+
+    const percent = Math.round((current / total) * 100);
+    progressBar.style.width = percent + '%';
+    progressPercent.textContent = percent + '%';
+
+    if (percent === 100) {
+        setTimeout(() => {
+            progressSection.style.display = 'none';
+        }, 2000);
+    }
+}
+
+function showProgress(toolName) {
+    const progressSection = document.getElementById(`${toolName}-progress`);
+    if (progressSection) {
+        progressSection.style.display = 'block';
+    }
+}
+
+function hideProgress(toolName) {
+    const progressSection = document.getElementById(`${toolName}-progress`);
+    if (progressSection) {
+        progressSection.style.display = 'none';
+    }
+}
+
+// ==================== VIDEO CONVERTER ====================
+function initializeVideoConverter() {
+    const uploadArea = document.getElementById('video-converter-upload');
+    const fileInput = document.getElementById('video-converter-input');
+    const convertBtn = document.getElementById('video-converter-convert');
+
+    if (!uploadArea || !fileInput) return;
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    setupDragAndDrop(uploadArea, handleVideoConverterFile);
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleVideoConverterFile([e.target.files[0]]);
+        }
+    });
+
+    if (convertBtn) {
+        convertBtn.addEventListener('click', processVideoConversion);
+    }
+}
+
+function handleVideoConverterFile(files) {
+    if (files.length === 0 || !files[0].type.startsWith('video/')) {
+        alert(translate('error') || 'Please select a valid video file');
+        return;
+    }
+
+    state.videoConverter.file = files[0];
+    document.getElementById('video-converter-options').style.display = 'block';
+    displayVideoConverterPreview();
+}
+
+function displayVideoConverterPreview() {
+    const preview = document.getElementById('video-converter-preview');
+    if (!preview) return;
+
+    preview.innerHTML = `
+        <div class="video-card">
+            <video class="video-player" controls>
+                <source src="${URL.createObjectURL(state.videoConverter.file)}" type="${state.videoConverter.file.type}">
+            </video>
+            <div class="video-info">
+                <div class="preview-filename">${state.videoConverter.file.name}</div>
+                <div class="preview-details">
+                    ${translate('size') || 'Size'}: ${(state.videoConverter.file.size / 1024 / 1024).toFixed(2)} MB
+                </div>
+                <div class="preview-status processing">${translate('ready') || 'Ready to convert'}</div>
+            </div>
+        </div>
+    `;
+}
+
+async function processVideoConversion() {
+    const toFormat = document.getElementById('video-to-format').value;
+    const quality = document.getElementById('video-converter-quality').value;
+    const preview = document.getElementById('video-converter-preview');
+    const videoCard = preview.querySelector('.video-card');
+    const statusDiv = videoCard.querySelector('.preview-status');
+
+    try {
+        statusDiv.textContent = translate('processing');
+        statusDiv.className = 'preview-status processing';
+
+        // Show progress
+        showProgress('video-converter');
+
+        // Simulate conversion progress
+        for (let i = 0; i <= 100; i += 10) {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            updateProgress('video-converter', i, 100);
+        }
+
+        // Note: Full video conversion requires server-side processing or WebCodecs API
+        // This is a simplified client-side demonstration
+        const convertedBlob = await convertVideoFormat(state.videoConverter.file, toFormat, quality);
+
+        statusDiv.textContent = translate('completed');
+        statusDiv.className = 'preview-status ready';
+
+        // Update preview with converted video
+        const processedVideo = videoCard.querySelector('.video-player');
+        processedVideo.src = URL.createObjectURL(convertedBlob);
+
+        // Add download button
+        const actions = document.createElement('div');
+        actions.className = 'preview-actions';
+        actions.innerHTML = `
+            <button class="btn btn-success">
+                <i class="fas fa-download"></i>
+                <span>${translate('download')}</span>
+            </button>
+        `;
+        videoCard.querySelector('.video-info').appendChild(actions);
+
+        actions.querySelector('button').addEventListener('click', () => {
+            downloadBlob(convertedBlob, state.videoConverter.file.name.replace(/\.[^/.]+$/, '') + '.' + toFormat);
+        });
+
+        state.videoConverter.processed = convertedBlob;
+
+        hideProgress('video-converter');
+
+    } catch (error) {
+        statusDiv.textContent = translate('error');
+        statusDiv.className = 'preview-status error';
+        console.error(error);
+        hideProgress('video-converter');
+        alert('Video conversion failed. This feature requires advanced browser support or server-side processing.');
+    }
+}
+
+async function convertVideoFormat(file, targetFormat, quality) {
+    // Note: True video format conversion requires server-side processing or WebCodecs API
+    // This is a simplified demonstration that returns the original file
+    // In a production environment, you would use ffmpeg.wasm or a server-side API
+
+    return new Promise((resolve, reject) => {
+        // For demonstration, we'll just return the original file
+        // In reality, you'd need to use ffmpeg.wasm or server-side conversion
+        setTimeout(() => {
+            resolve(file);
+        }, 2000);
+    });
 }

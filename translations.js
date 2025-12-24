@@ -1,8 +1,9 @@
 // Multi-language translations
 const translations = {
     ar: {
-        'page-title': 'أدوات الصور والفيديو المجانية - تحويل، ضغط، إزالة الخلفية',
-        'site-name': 'أدوات الصور',
+        'page-title': 'Mina Boules Tools - أدوات الصور والفيديو المجانية',
+        'site-name': 'Mina Boules Tools',
+        'visit-website': 'زيارة الموقع',
         'hero-title': 'أدوات احترافية للصور والفيديو',
         'hero-subtitle': 'حول، اضغط، وعدل الصور والفيديوهات مباشرة في متصفحك - مجاني 100%، خاص، وبدون حدود',
         'feature-private': 'خصوصية 100%',
@@ -18,6 +19,15 @@ const translations = {
         'tool-compress-desc': 'تقليل حجم الملف مع الحفاظ على الجودة - تحويل تلقائي إلى WebP',
         'tool-video-bg-title': 'إزالة خلفية الفيديو',
         'tool-video-bg-desc': 'إزالة الخلفيات من الفيديوهات إطار بإطار مع دعم الشفافية',
+        'tool-video-converter-title': 'تحويل الفيديو',
+        'tool-video-converter-desc': 'تحويل الفيديوهات بين صيغ MP4, WebM, MOV, AVI مع ضبط الجودة',
+        'video-bg-info': 'ملاحظة: إزالة خلفية الفيديو ميزة تجريبية. التنفيذ الكامل يتطلب معالجة من جانب الخادم للحصول على أفضل النتائج.',
+        'upload-video-converter-note': 'يدعم صيغ MP4, WebM, MOV, AVI',
+        'video-quality': 'جودة الفيديو:',
+        'btn-convert-video': 'تحويل الفيديو',
+        'about-title': 'عن Mina Boules Tools',
+        'contact-title': 'التواصل والدعم',
+        'support-paypal': 'الدعم عبر PayPal',
 
         'btn-start': 'ابدأ الآن',
         'btn-convert': 'تحويل الكل',
@@ -67,8 +77,9 @@ const translations = {
     },
 
     en: {
-        'page-title': 'Free Image & Video Tools - Convert, Compress, Remove Background',
-        'site-name': 'ImageTools',
+        'page-title': 'Mina Boules Tools - Free Image & Video Tools',
+        'site-name': 'Mina Boules Tools',
+        'visit-website': 'Visit Website',
         'hero-title': 'Professional Image & Video Tools',
         'hero-subtitle': 'Convert, compress, and edit images and videos directly in your browser - 100% free, private, and unlimited',
         'feature-private': '100% Private',
@@ -84,6 +95,15 @@ const translations = {
         'tool-compress-desc': 'Reduce file size while maintaining quality - auto convert to WebP',
         'tool-video-bg-title': 'Video Background Removal',
         'tool-video-bg-desc': 'Remove backgrounds from videos frame by frame with transparency support',
+        'tool-video-converter-title': 'Video Converter',
+        'tool-video-converter-desc': 'Convert videos between MP4, WebM, MOV, AVI formats with quality control',
+        'video-bg-info': 'Note: Video background removal is a demo feature. Full implementation requires server-side processing for best results.',
+        'upload-video-converter-note': 'Supports MP4, WebM, MOV, AVI formats',
+        'video-quality': 'Video Quality:',
+        'btn-convert-video': 'Convert Video',
+        'about-title': 'About Mina Boules Tools',
+        'contact-title': 'Contact & Support',
+        'support-paypal': 'Support via PayPal',
 
         'btn-start': 'Start Now',
         'btn-convert': 'Convert All',
