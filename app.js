@@ -65,7 +65,11 @@ function openTool(tool) {
         'compress': translate('tool-compress-title'),
         'video-bg': translate('tool-video-bg-title'),
         'video-converter': translate('tool-video-converter-title'),
-        'scale': translate('tool-scale-title')
+        'scale': translate('tool-scale-title'),
+        'to-pdf': translate('tool-to-pdf-title'),
+        'pdf-editor': translate('tool-pdf-editor-title'),
+        'to-word': translate('tool-to-word-title'),
+        'to-excel': translate('tool-to-excel-title')
     };
 
     const toolDescs = {
@@ -74,7 +78,11 @@ function openTool(tool) {
         'compress': translate('tool-compress-desc'),
         'video-bg': translate('tool-video-bg-desc'),
         'video-converter': translate('tool-video-converter-desc'),
-        'scale': translate('tool-scale-desc')
+        'scale': translate('tool-scale-desc'),
+        'to-pdf': translate('tool-to-pdf-desc'),
+        'pdf-editor': translate('tool-pdf-editor-desc'),
+        'to-word': translate('tool-to-word-desc'),
+        'to-excel': translate('tool-to-excel-desc')
     };
 
     modalTitle.textContent = toolTitles[tool] || '';

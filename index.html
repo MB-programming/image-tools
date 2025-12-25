@@ -79,6 +79,11 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Document Processing Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -205,6 +210,46 @@
                     <h3 data-i18n="tool-scale-title">Scale & Resize Images</h3>
                     <p data-i18n="tool-scale-desc">Change image dimensions, resize photos, and convert formats in one step</p>
                     <button class="tool-btn" data-i18n="btn-start">Start Scaling</button>
+                </div>
+
+                <!-- Convert to PDF -->
+                <div class="tool-card" data-tool="to-pdf">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 data-i18n="tool-to-pdf-title">Convert to PDF</h3>
+                    <p data-i18n="tool-to-pdf-desc">Convert images, documents, and text to PDF with Arabic support</p>
+                    <button class="tool-btn" data-i18n="btn-start">Start Converting</button>
+                </div>
+
+                <!-- PDF Editor -->
+                <div class="tool-card tool-card-featured" data-tool="pdf-editor">
+                    <div class="tool-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3 data-i18n="tool-pdf-editor-title">PDF Editor</h3>
+                    <p data-i18n="tool-pdf-editor-desc">Edit PDF files: add text, sign, delete elements, manage pages - Full Arabic support</p>
+                    <button class="tool-btn" data-i18n="btn-start">Start Editing</button>
+                </div>
+
+                <!-- Convert to Word -->
+                <div class="tool-card" data-tool="to-word">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <h3 data-i18n="tool-to-word-title">Convert to Word</h3>
+                    <p data-i18n="tool-to-word-desc">Convert images and text to Word documents with formatting</p>
+                    <button class="tool-btn" data-i18n="btn-start">Start Converting</button>
+                </div>
+
+                <!-- Convert to Excel -->
+                <div class="tool-card" data-tool="to-excel">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <h3 data-i18n="tool-to-excel-title">Convert to Excel</h3>
+                    <p data-i18n="tool-to-excel-desc">Convert tables and data to Excel spreadsheets</p>
+                    <button class="tool-btn" data-i18n="btn-start">Start Converting</button>
                 </div>
             </div>
         </div>
@@ -557,6 +602,155 @@
 
                 <div id="scale-preview" class="preview-grid"></div>
             </div>
+
+            <!-- Convert to PDF Content -->
+            <div id="to-pdf-content" class="tool-content" style="display: none;">
+                <div class="upload-area" id="pdf-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p class="upload-title" data-i18n="upload-title">Drop images or files here</p>
+                    <p class="upload-note" data-i18n="upload-pdf-note">Supports images, text files, HTML - Bulk upload supported</p>
+                    <input type="file" id="pdf-input" accept="image/*,.txt,.html" multiple hidden>
+                </div>
+
+                <div id="pdf-options" class="options-panel" style="display: none;">
+                    <div class="option-row">
+                        <div class="option-group">
+                            <label data-i18n="pdf-title">Document Title:</label>
+                            <input type="text" id="pdf-title" placeholder="My Document">
+                        </div>
+                        <div class="option-group">
+                            <label data-i18n="pdf-orientation">Orientation:</label>
+                            <select id="pdf-orientation">
+                                <option value="portrait" data-i18n="portrait">Portrait</option>
+                                <option value="landscape" data-i18n="landscape">Landscape</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="pdf-create">
+                        <i class="fas fa-file-pdf"></i>
+                        <span data-i18n="btn-create-pdf">Create PDF</span>
+                    </button>
+                </div>
+
+                <div id="pdf-progress" class="progress-section" style="display: none;">
+                    <div class="progress-info">
+                        <span class="progress-text" data-i18n="processing">Processing...</span>
+                        <span class="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="pdf-progress-bar"></div>
+                    </div>
+                </div>
+
+                <div id="pdf-preview" class="preview-grid"></div>
+            </div>
+
+            <!-- PDF Editor Content -->
+            <div id="pdf-editor-content" class="tool-content" style="display: none;">
+                <div class="upload-area" id="pdf-editor-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <p class="upload-title" data-i18n="upload-pdf-edit">Upload PDF to Edit</p>
+                    <p class="upload-note" data-i18n="upload-pdf-edit-note">Full editing support with Arabic text</p>
+                    <input type="file" id="pdf-editor-input" accept=".pdf" hidden>
+                </div>
+
+                <div id="pdf-editor-workspace" style="display: none;">
+                    <div class="pdf-toolbar">
+                        <button class="tool-btn-sm" id="pdf-add-text" title="Add Text">
+                            <i class="fas fa-font"></i>
+                            <span data-i18n="add-text">Add Text</span>
+                        </button>
+                        <button class="tool-btn-sm" id="pdf-add-signature" title="Add Signature">
+                            <i class="fas fa-signature"></i>
+                            <span data-i18n="add-signature">Sign</span>
+                        </button>
+                        <button class="tool-btn-sm" id="pdf-delete-element" title="Delete Element">
+                            <i class="fas fa-trash"></i>
+                            <span data-i18n="delete">Delete</span>
+                        </button>
+                        <button class="tool-btn-sm" id="pdf-add-page" title="Add Page">
+                            <i class="fas fa-file-medical"></i>
+                            <span data-i18n="add-page">Add Page</span>
+                        </button>
+                        <button class="tool-btn-sm" id="pdf-delete-page" title="Delete Page">
+                            <i class="fas fa-file-excel"></i>
+                            <span data-i18n="delete-page">Delete Page</span>
+                        </button>
+                        <button class="tool-btn-sm btn-success" id="pdf-save">
+                            <i class="fas fa-download"></i>
+                            <span data-i18n="save-pdf">Save PDF</span>
+                        </button>
+                    </div>
+
+                    <div class="pdf-canvas-container">
+                        <canvas id="pdf-canvas"></canvas>
+                        <div id="pdf-text-overlay"></div>
+                    </div>
+
+                    <div class="pdf-pages-nav">
+                        <button id="pdf-prev-page"><i class="fas fa-chevron-left"></i></button>
+                        <span id="pdf-page-num">Page: <span id="pdf-current-page">1</span> / <span id="pdf-total-pages">1</span></span>
+                        <button id="pdf-next-page"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Convert to Word Content -->
+            <div id="to-word-content" class="tool-content" style="display: none;">
+                <div class="upload-area" id="word-upload">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p class="upload-title" data-i18n="upload-title">Drop images or text files</p>
+                    <p class="upload-note" data-i18n="upload-word-note">Convert to Word document</p>
+                    <input type="file" id="word-input" accept="image/*,.txt" multiple hidden>
+                </div>
+
+                <div id="word-options" class="options-panel" style="display: none;">
+                    <div class="option-group">
+                        <label data-i18n="word-title">Document Title:</label>
+                        <input type="text" id="word-title" placeholder="My Document">
+                    </div>
+
+                    <button class="btn btn-primary" id="word-create">
+                        <i class="fas fa-file-word"></i>
+                        <span data-i18n="btn-create-word">Create Word</span>
+                    </button>
+                </div>
+
+                <div id="word-preview" class="preview-grid"></div>
+            </div>
+
+            <!-- Convert to Excel Content -->
+            <div id="to-excel-content" class="tool-content" style="display: none;">
+                <div class="excel-input-area">
+                    <h3 data-i18n="excel-input-title">Enter Table Data</h3>
+                    <textarea id="excel-data" rows="10" placeholder="Paste CSV data or enter table data here...&#10;Name,Age,City&#10;Ahmed,25,Cairo&#10;Sara,30,Alexandria"></textarea>
+
+                    <div class="option-row">
+                        <div class="option-group">
+                            <label data-i18n="excel-separator">Separator:</label>
+                            <select id="excel-separator">
+                                <option value=",">Comma (,)</option>
+                                <option value=";">Semicolon (;)</option>
+                                <option value="\t">Tab</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="excel-create">
+                        <i class="fas fa-file-excel"></i>
+                        <span data-i18n="btn-create-excel">Create Excel</span>
+                    </button>
+                </div>
+
+                <div id="excel-preview" class="preview-grid"></div>
+            </div>
         </div>
     </div>
 
@@ -702,5 +896,6 @@
 
     <script src="translations.js"></script>
     <script src="app.js"></script>
+    <script src="document-tools.js"></script>
 </body>
 </html>
